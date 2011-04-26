@@ -3,7 +3,7 @@
 
 #include <set>
 
-
+//
 // Grid class, stores the information of the creeps or 
 // tower on this grid
 class Grid {
