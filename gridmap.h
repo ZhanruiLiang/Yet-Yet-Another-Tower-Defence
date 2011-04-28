@@ -1,14 +1,16 @@
 #ifndef GRIDMAP_H
 #define GRIDMAP_H
 
-#include "grid.h"
-
 // GridMap class
 // Holds a two-dimensional array of grids and calculates
 // the routes of the creeps.
 class GridMap {
     
     public:
+
+        // enum the directions
+        enum Direction {NONE, LEFT, RIGHT, UP, DOWN, 
+                        TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT};
 
         // GridMap constructor, takes two params namely the 
         // width and height of the map
@@ -35,7 +37,8 @@ class GridMap {
         // is being blocked
         bool isBlocked();
 
-        bool canBuildAt();
+        // Check whether a tower can be built at the given coordinate
+        bool canBuildAt(int x, int y);
 
         // Get the width of the map
         int getWidth() const;
@@ -45,7 +48,7 @@ class GridMap {
 
         // Get the direction the creeps should head for
         // at the given coordinate
-        Grid::Direction getDirectionAtCoord(int x, int y);
+        Direction getDirectionAtCoord(int x, int y) const;
 
 
 #ifdef DEBUG
@@ -54,14 +57,25 @@ class GridMap {
 
     private:
 
+        // Grid struct, stores the information of the creeps or 
+        // tower on this grid
+        struct Grid {
+            Grid();
+            ~Grid();
+            Direction direction; // 
+            bool is_walkable;    //
+            bool visited;        // 
+        };
+
+
     // Helper functions
 
         // Clear all grids' directions and mark them as unvisited.
         // used in updateRoute()
-        void clearGridsFlags(); 
+        void _clearGridsFlags(); 
 
         // Determine whether the given coordinate is valid
-        bool isValidCoord(int x, int y); 
+        bool _isValidCoord(int x, int y) const; 
                                 
 
     // Data memebers
@@ -72,10 +86,6 @@ class GridMap {
         // Grids for testing whether after certain given commands
         // the routes will be blocked
         Grid **_test_grids;
-
-        // Two dimensional array to hold the visit of the grids.
-        // used in updateRoute;
-        bool **_visited;    
 
         // Width and height of the grid map
         int _width;    

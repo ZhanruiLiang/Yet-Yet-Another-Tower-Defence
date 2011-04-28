@@ -1,6 +1,5 @@
 #include <cstdlib>
 
-#include "grid.h"
 #include "gridmap.h"
 
 
