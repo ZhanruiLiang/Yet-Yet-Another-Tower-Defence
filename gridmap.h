@@ -43,7 +43,9 @@ class GridMap {
         void clearCreepsInfo();
 
         // Set whether the grid at the given coordinate has a creep
-        void setHasCreepsAt(int x, int y, bool has);
+        // *Note*: This method should be called at each iteration
+        // of the game loop after clearCreepsInfo()
+        void addCreepsAt(int x, int y);
 
         // Check whether a tower can be built at the given coordinate
         bool canBuildAt(int x, int y);

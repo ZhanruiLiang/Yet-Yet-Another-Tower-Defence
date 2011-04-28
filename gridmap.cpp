@@ -102,12 +102,21 @@ void GridMap::setWalkableAt(int x, int y, bool walkable) {
 }
 
 
-// Set whether the grid at the given coordinate is walkable
-void GridMap::setHasCreepsAt(int x, int y, bool has) {
+// Set all grids to have no creeps on them
+void GridMap::clearCreepsInfo() {
+    for (int i = 0; i < _height; ++i) {
+        for (int j = 0; j < _width; ++j) {
+            _grids[i][j].has_creeps = false;
+        }
+    }
+}
+
+// Set the given grid to be have creeps on it
+void GridMap::addCreepsAt(int x, int y) {
 #ifdef DEBUG
     VALID_COORD
 #endif
-    _grids[y][x].has_creeps = has;
+    _grids[y][x].has_creeps = true;
 }
 
 
