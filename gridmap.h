@@ -21,7 +21,7 @@ class GridMap {
 
         // Set the source coordinate of this grid map
         // The source is where the creeps spawn
-        //void setSource(int x, int y);
+        void setSource(int x, int y);
 
         // Set the target coordinate of the this grid map
         // The target coordinate is where the creeps exit
@@ -31,6 +31,14 @@ class GridMap {
 
         // Set whether the grid at the given coordinate is walkable
         void setWalkableAt(int x, int y, bool walkable);
+
+        // Set whether the grid at the given coordinate has a creep
+        void setHasCreepsAt(int x, int y, bool has);
+
+        // Set all grids to have no creeps on them
+        // *Note*: This is will not affect any *REAL* creeps
+        // it only clears the has_creep flag in the grid struct
+        void clearCreepsInfo();
 
         // Check whether a tower can be built at the given coordinate
         bool canBuildAt(int x, int y);
@@ -47,7 +55,7 @@ class GridMap {
 
         // Get the direction the creeps should head for
         // at the given coordinate
-        Direction getDirectionAtCoord(int x, int y) const;
+        Direction getDirectionAt(int x, int y) const;
 
 
 #ifdef DEBUG
@@ -64,6 +72,7 @@ class GridMap {
             Direction direction; // 
             bool is_walkable;    //
             bool visited;        // 
+            bool has_creeps;     // 
         };
 
 
@@ -71,10 +80,13 @@ class GridMap {
 
         // Clear all grids' directions and mark them as unvisited.
         // used in updateRoute()
-        void _clearGridsFlags(); 
+        void _clearGridsFlags(Grid **grids);
 
         // Determine whether the given coordinate is valid
         bool _isValidCoord(int x, int y) const; 
+
+        // Helper function to update the specified grids
+        void _updateRouteHelper(Grid **grids);
                                 
 
     // Data memebers
