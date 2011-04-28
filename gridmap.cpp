@@ -48,7 +48,11 @@ GridMap::Grid::~Grid() {
 GridMap::GridMap(int width, int height)
     :_grids(NULL),
      _width(width),
-     _height(height) {
+     _height(height),
+     _source_x(0),
+     _source_y(0),
+     _target_x(0),
+     _target_y(0) {
 #ifdef DEBUG
     assert(width > 0 and height > 0);
 #endif
@@ -115,6 +119,13 @@ bool GridMap::canBuildAt(int x, int y) {
         for (int j = 0; j < _width; ++j) {
             _test_grids[y][x] = _grids[y][x];
         }
+    }
+
+    // Check whether the coordinate already has creeps on it
+    // or it's not walkable(has built a tower on it)
+    if (_test_grids[y][x].has_creeps or 
+        not _test_grids[y][x].is_walkable) {
+        return false;
     }
 
     // Update route on _test_grids

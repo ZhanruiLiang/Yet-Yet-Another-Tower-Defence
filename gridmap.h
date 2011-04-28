@@ -30,15 +30,20 @@ class GridMap {
         void setTarget(int x, int y);
 
         // Set whether the grid at the given coordinate is walkable
+        // *Note*: When a tower is built, this method should be
+        // called to set the correponding coordinate to be 
+        // not walkable
         void setWalkableAt(int x, int y, bool walkable);
-
-        // Set whether the grid at the given coordinate has a creep
-        void setHasCreepsAt(int x, int y, bool has);
 
         // Set all grids to have no creeps on them
         // *Note*: This is will not affect any *REAL* creeps
         // it only clears the has_creep flag in the grid struct
+        // This method should be called in each iteration of 
+        // the game loop before setHasCreepsAt();
         void clearCreepsInfo();
+
+        // Set whether the grid at the given coordinate has a creep
+        void setHasCreepsAt(int x, int y, bool has);
 
         // Check whether a tower can be built at the given coordinate
         bool canBuildAt(int x, int y);
