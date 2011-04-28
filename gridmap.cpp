@@ -1,7 +1,15 @@
 #include "gridmap.h"
 
-#include <cstddef> // For NULL and int
-#include <queue>   // For priority_queue
+#include <cassert>
+#include <ciso646> // For "and" "or" "not"
+#include <cstddef> // For "NULL"
+#include <queue>   // For "priority_queue"
+
+#ifdef DEBUG
+#define VALID_COORD \
+    assert(x >= 0 and x < _width and y >= 0 and y < _height);
+#endif
+
 
 // struct GreedyNode
 // Data fields:
@@ -40,7 +48,9 @@ GridMap::GridMap(int width, int height)
     :_grids(NULL),
      _width(width),
      _height(height) {
-
+#ifdef DEBUG
+    assert(width > 0 and height > 0);
+#endif
     // construct a two dimensional array of grids
     _grids = new Grid*[height];
     _test_grids = new Grid*[height];
@@ -58,17 +68,37 @@ GridMap::~GridMap() {
     delete [] _grids;
 }
 
+
 // Set the source coordinate of the map
 //void GridMap::setSource(int x, int y) {
 //    _source_x = x;
 //    _source_y = y;
 //}
 
+
 // Set the target coordinate of the map
 void GridMap::setTarget(int x, int y) {
+#ifdef DEBUG
+    VALID_COORD
+#endif
     _target_x = x;
     _target_y = y;
 }
+
+
+// Set whether the grid at the given coordinate is walkable
+void GridMap::setWalkableAt(int x, int y, bool walkable) {
+#ifdef DEBUG
+    VALID_COORD
+#endif
+    _grids[y][x].is_walkable = walkable;
+}
+
+// Check whether a tower can be built at the given coordinate
+bool canBuildAt(int x, int y) {
+
+}
+
 
 
 // Update the routes, this method is called each time
@@ -190,7 +220,8 @@ void GridMap::updateRoute() {
                 int next_x = x + d_offset_x[i];
                 int next_y = y + d_offset_y[i];
 
-                if (not _grids[next_y][next_x].visited) {
+                if (_isValidCoord(next_x, next_y) and 
+                    not _grids[next_y][next_x].visited) {
                     // Update the grid's direction
                     _grids[next_y][next_x].direction = ddirs[i];
 
@@ -215,6 +246,13 @@ int GridMap::getHeight() const {
     return _height;
 }
 
+GridMap::Direction GridMap::getDirectionAtCoord(int x, int y) const {
+#ifdef DEBUG
+    VALID_COORD
+#endif
+    return _grids[y][x].direction;
+}
+
 
 // Clear all grids' directions and mark them as unvisited.
 void GridMap::_clearGridsFlags() {
@@ -228,7 +266,7 @@ void GridMap::_clearGridsFlags() {
 
 // Determine if the given coordinate is inside the map
 // and is walkable
-bool GridMap::_isValidCoord(int x, int y) {
+bool GridMap::_isValidCoord(int x, int y) const {
     return x >= 0 and x < _width and
            y >= 0 and y < _height and
            _grids[y][x].is_walkable;
@@ -250,7 +288,7 @@ void GridMap::debugPrint() const {
         for (int j = 0; j < _width; ++j) {
             switch (_grids[i][j].direction) {
                 case NONE:
-                    putchar('+'); break;
+                    putchar(' '); break;
                 case LEFT:
                     putchar('<'); break;
                 case RIGHT:

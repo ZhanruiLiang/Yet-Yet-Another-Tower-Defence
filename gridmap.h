@@ -29,16 +29,15 @@ class GridMap {
         // y grows from top to bottom.
         void setTarget(int x, int y);
 
-        // Update the routes, this method is called each time
-        // a new tower is built or a present tower is destroyed.
-        void updateRoute();
-
-        // Check to see whether the path from source to target
-        // is being blocked
-        bool isBlocked();
+        // Set whether the grid at the given coordinate is walkable
+        void setWalkableAt(int x, int y, bool walkable);
 
         // Check whether a tower can be built at the given coordinate
         bool canBuildAt(int x, int y);
+
+        // Update the routes, this method is called each time
+        // a new tower is built or a present tower is destroyed.
+        void updateRoute();
 
         // Get the width of the map
         int getWidth() const;
@@ -85,6 +84,7 @@ class GridMap {
 
         // Grids for testing whether after certain given commands
         // the routes will be blocked
+        // used in canBuildAt(int x, int y)
         Grid **_test_grids;
 
         // Width and height of the grid map
