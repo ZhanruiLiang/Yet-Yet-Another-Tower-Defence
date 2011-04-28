@@ -1,6 +1,6 @@
 objects = main.o gridmap.o
 flags = -Wall -DDEBUG
-compiler = g++
+compiler = clang++
 
 yyatd : main.o gridmap.o
 	$(compiler) $(objects) -o yyatd

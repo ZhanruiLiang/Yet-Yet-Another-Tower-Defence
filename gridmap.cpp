@@ -64,8 +64,10 @@ GridMap::GridMap(int width, int height)
 GridMap::~GridMap() {
     for (int i = 0; i < _height; ++i) {
         delete [] _grids[i];
+        delete [] _test_grids[i];
     }
     delete [] _grids;
+    delete [] _test_grids;
 }
 
 
@@ -96,7 +98,7 @@ void GridMap::setWalkableAt(int x, int y, bool walkable) {
 
 // Check whether a tower can be built at the given coordinate
 bool canBuildAt(int x, int y) {
-
+    
 }
 
 
