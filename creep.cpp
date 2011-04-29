@@ -1,4 +1,4 @@
-#include "gridmap.h"
+#include "grid_map.h"
 #include "creep.h"
 
 #include <cassert>  // For: assert

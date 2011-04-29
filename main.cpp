@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "gridmap.h"
+#include "grid_map.h"
 #include "creep.h"
 
 #ifdef DEBUG
