@@ -348,6 +348,13 @@ GridMap::Direction GridMap::getDirectionAt(int x, int y) const {
     return _grids[y][x].direction;
 }
 
+int GridMap::toGridCenterX(int x) const {
+    return x / _grid_size * _grid_size + _grid_size / 2;  
+}
+
+int GridMap::toGridCenterY(int y) const {
+    return y / _grid_size * _grid_size + _grid_size / 2;  
+}
 
 int GridMap::toGridX(int x) const {
     return x / _grid_size; 

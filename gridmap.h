@@ -17,7 +17,12 @@
 //          int x = creep.getX(), y = creep.getY();
 //          gm->addCreepsAt(x, y);
 //
-//      // now you can test for building validity
+//      if gm->canBuildAt(tower_x, tower_y):
+//          int x = gm->toGridCenterX(tower_x);
+//          int y = gm->toGridCenterY(tower_y);
+//          // ...
+//          // build tower stuff here
+//          gm->setWalkableAt(x, y, false);
 class GridMap {
     
     public:
@@ -69,15 +74,20 @@ class GridMap {
         // a new tower is built or a present tower is destroyed.
         void updateRoute();
 
-        // Get the width of the map
+        // Get the width(number of horizontal grids) of the map 
         int getWidth() const;
 
-        // Get the height of the map
+        // Get the height(number of vertical grids) of the map
         int getHeight() const;
 
         // Get the direction the creeps should head for
         // at the given coordinate
         Direction getDirectionAt(int x, int y) const;
+
+        // Adjust the given coordinate to be the nearest center
+        // of a grid
+        int toGridCenterX(int x) const;
+        int toGridCenterY(int y) const;
 
 
 #ifdef DEBUG

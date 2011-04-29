@@ -41,6 +41,8 @@ int main(int argc, char *argv[]) {
     puts("Clear grids again");
     gm->clearCreepsInfo();
     canBuildAt(gm, 1 * GRID_SIZE, 1 * GRID_SIZE);
+    printf("Center of (5, 15) : (%d, %d)\n", 
+           gm->toGridCenterX(5), gm->toGridCenterY(15));
 
     delete gm;
 #endif
