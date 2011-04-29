@@ -16,31 +16,31 @@ void canBuildAt(GridMap *gm, int x, int y) {
 int main(int argc, char *argv[]) {
    
 #ifdef DEBUG
-    GridMap *gm = new GridMap(30, 30);
-    gm->setTarget(5, 5);
+    enum {GRID_SIZE = 20};
+    GridMap *gm = new GridMap(30, 30, GRID_SIZE);
+    gm->setTarget(5 * GRID_SIZE, 5 * GRID_SIZE);
     for (int i = 0; i < 20; ++i) {
-        gm->setWalkableAt(10, i, false);
+        gm->setWalkableAt(10 * GRID_SIZE, i * GRID_SIZE, false);
     }
     for (int i = 10; i < 20; ++i) {
-        gm->setWalkableAt(i, 10, false);
+        gm->setWalkableAt(i * GRID_SIZE, 10 * GRID_SIZE, false);
     }
     gm->updateRoute();
 
     // test route
-    gm->debugPrint();
-
+    gm->printRoute();
 
     gm->clearCreepsInfo();
-    gm->addCreepsAt(1, 1);
+    gm->addCreepsAt(1 * GRID_SIZE, 1 * GRID_SIZE);
 
-    canBuildAt(gm, 0, 0);
-    canBuildAt(gm, 1, 1);
-    canBuildAt(gm, 10, 10);
+    canBuildAt(gm, 1 * GRID_SIZE, 1 * GRID_SIZE);
+    canBuildAt(gm, 10 * GRID_SIZE, 10 * GRID_SIZE);
+    canBuildAt(gm, 20 * GRID_SIZE, 20 * GRID_SIZE);
 
     // clear grids again
     puts("Clear grids again");
     gm->clearCreepsInfo();
-    canBuildAt(gm, 1, 1);
+    canBuildAt(gm, 1 * GRID_SIZE, 1 * GRID_SIZE);
 
     delete gm;
 #endif

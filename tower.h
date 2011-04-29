@@ -3,7 +3,11 @@
 
 #include <set>
 
-// Abstract base tower class
+// Forward declarations
+class Creep;
+
+
+// Base tower class
 class Tower {
 
     public:
@@ -11,9 +15,10 @@ class Tower {
         Tower();
         virtual ~Tower();
 
+        // Try to attack a creep 
         // Return true if the cooldown count has reached 0,
-        // otherwise decrease the cooldown count
-        virtual bool attack() = 0;
+        // and the creep is within the tower's range
+        bool attack(Creep *creep);
 
         // Set the coordinate of this tower on the grid map
         // Note: this method should only be called by GridMap
