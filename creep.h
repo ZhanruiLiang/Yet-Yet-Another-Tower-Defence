@@ -10,6 +10,9 @@ class GridMap;
 class Creep {
 
     public:
+
+        typedef int CreepType;
+
         Creep();
         virtual ~Creep();
 
@@ -22,15 +25,29 @@ class Creep {
         // game loop
         void update();
 
+        // Set the specific type of creep
+        void setType(CreepType type);
+
+        // Set coordinate
         void setX(double x);  
         void setY(double y);
 
         void setVelocity(double velocity);
 
+        void setHealth(int health);
+    
+
+        CreepType getType() const;
+
         double getX() const;
         double getY() const;
 
         double getVelocity() const;
+
+        int getHealth() const;
+
+
+        bool isDead() const;
 
     private:
 
@@ -40,6 +57,10 @@ class Creep {
         double _y;
 
         double _velocity;
+
+        int _health;
+
+        CreepType _type;
 };
 
 #endif

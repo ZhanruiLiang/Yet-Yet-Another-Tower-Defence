@@ -374,6 +374,7 @@ void GridMap::_clearGridsFlags(Grid **grids) {
 
 // Determine if the given coordinate is inside the map
 // and is walkable
+// *Note*: Grid coordinate instead of world coordinate
 bool GridMap::_isValidCoord(int x, int y) const {
     return x >= 0 and x < _width and
            y >= 0 and y < _height and

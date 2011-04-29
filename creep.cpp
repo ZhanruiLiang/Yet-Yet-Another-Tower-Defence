@@ -8,7 +8,9 @@ Creep::Creep()
     :_grid_map(NULL),
      _x(.0),
      _y(.0),
-     _velocity(.0) {     
+     _velocity(.0),
+     _health(0),
+     _type(0){     
 }
 
 Creep::~Creep() {
@@ -50,6 +52,9 @@ void Creep::update() {
     }
 }
 
+void Creep::setType(CreepType type) {
+    _type = type;
+}
 
 void Creep::setX(double x) {
     _x = x;
@@ -63,6 +68,14 @@ void Creep::setVelocity(double velocity) {
     _velocity = velocity;
 }
 
+void Creep::setHealth(int health) {
+    _health = health;
+}
+
+Creep::CreepType Creep::getType() const {
+    return _type;
+}
+
 double Creep::getX() const {
     return _x;
 }
@@ -73,4 +86,12 @@ double Creep::getY() const {
 
 double Creep::getVelocity() const {
     return _velocity;
+}
+
+int Creep::getHealth() const {
+    return _health;
+}
+
+bool Creep::isDead() const {
+    return _health <= 0;
 }

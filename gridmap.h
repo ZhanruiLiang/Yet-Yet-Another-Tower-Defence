@@ -95,6 +95,8 @@ class GridMap {
 
         // Adjust the given coordinate to be the nearest center
         // of a grid
+        // Used when building a tower(A tower should be build at
+        // the center a grid)
         int toGridCenterX(int x) const;
         int toGridCenterY(int y) const;
 

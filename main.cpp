@@ -4,7 +4,6 @@
 #include "gridmap.h"
 #include "creep.h"
 
-
 #ifdef DEBUG
 
 #include <unistd.h>
@@ -79,8 +78,6 @@ void test() {
 
     delete gm;
 }
-
-
 
 #endif
 
