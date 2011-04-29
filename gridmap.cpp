@@ -1,8 +1,15 @@
-#include "grid.h"
 #include "gridmap.h"
 
-#include <cstddef> // For NULL and size_t
-#include <queue>   // For priority_queue
+#include <cassert>
+#include <ciso646> // For "and" "or" "not"
+#include <cstddef> // For "NULL"
+#include <queue>   // For "priority_queue"
+
+#ifdef DEBUG
+#define VALID_COORD \
+    assert(x >= 0 and x < _width and y >= 0 and y < _height);
+#endif
+
 
 // struct GreedyNode
 // Data fields:
@@ -26,48 +33,140 @@ struct GreedyNode {
 };
 
 
+GridMap::Grid::Grid() 
+    :direction(GridMap::NONE),
+     is_walkable(true),
+     visited(false),
+     has_creeps(false) {
+}
+
+GridMap::Grid::~Grid() {
+}
+
+
 // GridMap constructor 
 GridMap::GridMap(int width, int height)
     :_grids(NULL),
-     _visited(NULL),
      _width(width),
-     _height(height) {
-
-    // construct a two dimensional array of grids and visit
+     _height(height),
+     _source_x(0),
+     _source_y(0),
+     _target_x(0),
+     _target_y(0) {
+#ifdef DEBUG
+    assert(width > 0 and height > 0);
+#endif
+    // construct a two dimensional array of grids
     _grids = new Grid*[height];
-    _visited = new bool*[height];
-    for (size_t i = 0; i < height; ++i) {
+    _test_grids = new Grid*[height];
+    for (int i = 0; i < height; ++i) {
         _grids[i] = new Grid[width];
-        _visited[i] = new bool[width];
+        _test_grids[i] = new Grid[width];
     }
 }
 
 // Destructor
 GridMap::~GridMap() {
-    for (size_t i = 0; i < _height; ++i) {
+    for (int i = 0; i < _height; ++i) {
         delete [] _grids[i];
-        delete [] _visited[i];
+        delete [] _test_grids[i];
     }
     delete [] _grids;
-    delete [] _visited;
+    delete [] _test_grids;
 }
 
+
 // Set the source coordinate of the map
-//void GridMap::setSource(int x, int y) {
-//    _source_x = x;
-//    _source_y = y;
-//}
+void GridMap::setSource(int x, int y) {
+    _source_x = x;
+    _source_y = y;
+}
+
 
 // Set the target coordinate of the map
 void GridMap::setTarget(int x, int y) {
+#ifdef DEBUG
+    VALID_COORD
+#endif
     _target_x = x;
     _target_y = y;
+}
+
+
+// Set whether the grid at the given coordinate is walkable
+void GridMap::setWalkableAt(int x, int y, bool walkable) {
+#ifdef DEBUG
+    VALID_COORD
+#endif
+    _grids[y][x].is_walkable = walkable;
+}
+
+
+// Set all grids to have no creeps on them
+void GridMap::clearCreepsInfo() {
+    for (int i = 0; i < _height; ++i) {
+        for (int j = 0; j < _width; ++j) {
+            _grids[i][j].has_creeps = false;
+        }
+    }
+}
+
+// Set the given grid to be have creeps on it
+void GridMap::addCreepsAt(int x, int y) {
+#ifdef DEBUG
+    VALID_COORD
+#endif
+    _grids[y][x].has_creeps = true;
+}
+
+
+// Check whether a tower can be built at the given coordinate
+bool GridMap::canBuildAt(int x, int y) {
+
+    // Reset _test_grids info
+    for (int i = 0; i < _height; ++i) {
+        for (int j = 0; j < _width; ++j) {
+            _test_grids[y][x] = _grids[y][x];
+        }
+    }
+
+    // Check whether the coordinate already has creeps on it
+    // or it's not walkable(has built a tower on it)
+    if (_test_grids[y][x].has_creeps or 
+        not _test_grids[y][x].is_walkable) {
+        return false;
+    }
+
+    // Update route on _test_grids
+    _updateRouteHelper(_test_grids);
+
+    // Check whether the routes from source to target is blocked
+    if (_test_grids[_source_y][_source_x].direction == NONE) {
+        return false;
+    }
+
+    // Check whether the grids that still has creeps on them is blocked
+    for (int i = 0; i < _height; ++i) {
+        for (int j = 0; j < _width; ++j) {
+            if (_test_grids[i][j].has_creeps and 
+                _test_grids[i][j].direction == NONE) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 
 // Update the routes, this method is called each time
 // a new tower is built or a present tower is destroyed.
 //
+// see _updateRouteHelper() for more details
+void GridMap::updateRoute() {
+    _updateRouteHelper(_grids);
+}
+
+// Helper function for updating the routes
 // This method uses a Greedy algorithm to calculate the routes.
 //
 // To begin with, the target node is pushed into the priority
@@ -91,7 +190,7 @@ void GridMap::setTarget(int x, int y) {
 //
 // By introducing the diagonal shortcuts, the routes will
 // be more natural.
-void GridMap::updateRoute() {
+void GridMap::_updateRouteHelper(Grid **grids) {
 
     // horizontal and vertical offsets
     static const int offset_x[] = {-1, 0, 1, 0};
@@ -117,24 +216,24 @@ void GridMap::updateRoute() {
     // d_offset[(i + 1) % 4] is invalid.
 
     // horizontal and vertical directions
-    static const Grid::Direction dirs[] = {
-        Grid::RIGHT, Grid::UP, Grid::LEFT, Grid::DOWN
+    static const Direction dirs[] = {
+        RIGHT, UP, LEFT, DOWN
     };
 
     // diagonal directions
-    static const Grid::Direction ddirs[] = {
-        Grid::BOTTOMRIGHT, Grid::TOPRIGHT, Grid::TOPLEFT, Grid::BOTTOMLEFT
+    static const Direction ddirs[] = {
+        BOTTOMRIGHT, TOPRIGHT, TOPLEFT, BOTTOMLEFT
     };
 
 
     // Step1: Clear all grids' direction to be Grid::NONE
     //        and mark all grids as un-visited
-    clearGridsFlags();
+    _clearGridsFlags(grids);
 
     // Step2: Begin Greedy Search
     std::priority_queue<GreedyNode> pq;
     pq.push(GreedyNode(_target_x, _target_y, 0));
-    _visited[_target_y][_target_x] = true;
+    grids[_target_y][_target_x].visited = true;
 
     while (not pq.empty()) {
 
@@ -149,23 +248,23 @@ void GridMap::updateRoute() {
         int dist = node.dist;
 
         // Inspect the adjacent nodes
-        for (size_t i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
 
             // Next node's coordinate
             int next_x = x + offset_x[i];
             int next_y = y + offset_y[i];
 
-            if (isValidCoord(next_x, next_y)) {
+            if (_isValidCoord(next_x, next_y)) {
 
-                if (not _visited[next_y][next_x]) {
+                if (not grids[next_y][next_x].visited) {
                     // Update the grid's direction
-                    _grids[next_y][next_x].setDirection(dirs[i]);
+                    grids[next_y][next_x].direction = dirs[i];
                     
                     // Push the node into the queue
                     pq.push(GreedyNode(next_x, next_y, dist + 10));
                     
                     // Mark the grid as visited
-                    _visited[next_y][next_x] = true;
+                    grids[next_y][next_x].visited = true;
                 }
 
             } else {
@@ -177,22 +276,23 @@ void GridMap::updateRoute() {
         }
 
         // Further inspect the diagonally adjacent nodes
-        for (size_t i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
 
             if (diagonal_valid[i]) {
 
                 int next_x = x + d_offset_x[i];
                 int next_y = y + d_offset_y[i];
 
-                if (not _visited[next_y][next_x]) {
+                if (_isValidCoord(next_x, next_y) and 
+                    not grids[next_y][next_x].visited) {
                     // Update the grid's direction
-                    _grids[next_y][next_x].setDirection(ddirs[i]);
+                    grids[next_y][next_x].direction = ddirs[i];
 
                     // Push the node into the queue
                     pq.push(GreedyNode(next_x, next_y, dist + 14));
 
                     // Mark the grid as visited
-                    _visited[next_y][next_x] = true;
+                    grids[next_y][next_x].visited = true;
                 }
             } 
         }
@@ -209,23 +309,30 @@ int GridMap::getHeight() const {
     return _height;
 }
 
+GridMap::Direction GridMap::getDirectionAt(int x, int y) const {
+#ifdef DEBUG
+    VALID_COORD
+#endif
+    return _grids[y][x].direction;
+}
+
 
 // Clear all grids' directions and mark them as unvisited.
-void GridMap::clearGridsFlags() {
-    for (size_t i = 0; i < _height; ++i) {
-        for (size_t j = 0; j < _width; ++j) {
-            _visited[i][j] = false;
-            _grids[i][j].setDirection(Grid::NONE);
+void GridMap::_clearGridsFlags(Grid **grids) {
+    for (int i = 0; i < _height; ++i) {
+        for (int j = 0; j < _width; ++j) {
+            grids[i][j].visited = false;
+            grids[i][j].direction = NONE;
         }
     }
 }
 
 // Determine if the given coordinate is inside the map
 // and is walkable
-bool GridMap::isValidCoord(int x, int y) {
+bool GridMap::_isValidCoord(int x, int y) const {
     return x >= 0 and x < _width and
            y >= 0 and y < _height and
-           _grids[y][x].isWalkable();
+           _grids[y][x].is_walkable;
 }
 
 
@@ -235,26 +342,26 @@ bool GridMap::isValidCoord(int x, int y) {
 
 void GridMap::debugPrint() const {
     printf("  ");
-    for (size_t i = 0; i < _width; ++i) {
+    for (int i = 0; i < _width; ++i) {
         printf("%2d", i);
     }
     puts("");
-    for (size_t i = 0; i < _height; ++i) {
+    for (int i = 0; i < _height; ++i) {
         printf("%2d ", i);
-        for (size_t j = 0; j < _width; ++j) {
-            switch (_grids[i][j].getDirection()) {
-                case Grid::NONE:
-                    putchar('+'); break;
-                case Grid::LEFT:
+        for (int j = 0; j < _width; ++j) {
+            switch (_grids[i][j].direction) {
+                case NONE:
+                    putchar(' '); break;
+                case LEFT:
                     putchar('<'); break;
-                case Grid::RIGHT:
+                case RIGHT:
                     putchar('>'); break;
-                case Grid::UP:
+                case UP:
                     putchar('^'); break;
-                case Grid::DOWN:
+                case DOWN:
                     putchar('v'); break;
-                case Grid::TOPLEFT:
-                case Grid::BOTTOMRIGHT:
+                case TOPLEFT:
+                case BOTTOMRIGHT:
                     putchar('\\'); break;
                 default:
                     putchar('/'); break;

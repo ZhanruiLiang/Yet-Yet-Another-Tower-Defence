@@ -1,14 +1,16 @@
 #ifndef GRIDMAP_H
 #define GRIDMAP_H
 
-#include "grid.h"
-
 // GridMap class
 // Holds a two-dimensional array of grids and calculates
 // the routes of the creeps.
 class GridMap {
     
     public:
+
+        // enum the directions
+        enum Direction {NONE, LEFT, RIGHT, UP, DOWN, 
+                        TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT};
 
         // GridMap constructor, takes two params namely the 
         // width and height of the map
@@ -19,7 +21,7 @@ class GridMap {
 
         // Set the source coordinate of this grid map
         // The source is where the creeps spawn
-        //void setSource(int x, int y);
+        void setSource(int x, int y);
 
         // Set the target coordinate of the this grid map
         // The target coordinate is where the creeps exit
@@ -27,15 +29,30 @@ class GridMap {
         // y grows from top to bottom.
         void setTarget(int x, int y);
 
+        // Set whether the grid at the given coordinate is walkable
+        // *Note*: When a tower is built, this method should be
+        // called to set the correponding coordinate to be 
+        // not walkable
+        void setWalkableAt(int x, int y, bool walkable);
+
+        // Set all grids to have no creeps on them
+        // *Note*: This is will not affect any *REAL* creeps
+        // it only clears the has_creep flag in the grid struct
+        // This method should be called in each iteration of 
+        // the game loop before setHasCreepsAt();
+        void clearCreepsInfo();
+
+        // Set whether the grid at the given coordinate has a creep
+        // *Note*: This method should be called at each iteration
+        // of the game loop after clearCreepsInfo()
+        void addCreepsAt(int x, int y);
+
+        // Check whether a tower can be built at the given coordinate
+        bool canBuildAt(int x, int y);
+
         // Update the routes, this method is called each time
         // a new tower is built or a present tower is destroyed.
         void updateRoute();
-
-        // Check to see whether the path from source to target
-        // is being blocked
-        bool isBlocked();
-
-        bool canBuildAt();
 
         // Get the width of the map
         int getWidth() const;
@@ -45,7 +62,7 @@ class GridMap {
 
         // Get the direction the creeps should head for
         // at the given coordinate
-        Grid::Direction getDirectionAtCoord(int x, int y);
+        Direction getDirectionAt(int x, int y) const;
 
 
 #ifdef DEBUG
@@ -54,14 +71,29 @@ class GridMap {
 
     private:
 
+        // Grid struct, stores the information of the creeps or 
+        // tower on this grid
+        struct Grid {
+            Grid();
+            ~Grid();
+            Direction direction; // 
+            bool is_walkable;    //
+            bool visited;        // 
+            bool has_creeps;     // 
+        };
+
+
     // Helper functions
 
         // Clear all grids' directions and mark them as unvisited.
         // used in updateRoute()
-        void clearGridsFlags(); 
+        void _clearGridsFlags(Grid **grids);
 
         // Determine whether the given coordinate is valid
-        bool isValidCoord(int x, int y); 
+        bool _isValidCoord(int x, int y) const; 
+
+        // Helper function to update the specified grids
+        void _updateRouteHelper(Grid **grids);
                                 
 
     // Data memebers
@@ -71,11 +103,8 @@ class GridMap {
 
         // Grids for testing whether after certain given commands
         // the routes will be blocked
+        // used in canBuildAt(int x, int y)
         Grid **_test_grids;
-
-        // Two dimensional array to hold the visit of the grids.
-        // used in updateRoute;
-        bool **_visited;    
 
         // Width and height of the grid map
         int _width;    

@@ -1,3 +1,5 @@
+#ifndef PREINCLUDE_H
+#define PREINCLUDE_H
 
 #include<SDL/SDL.h>
 #include<SDL/SDL_ttf.h>
@@ -8,3 +10,5 @@
 using std::cin;
 using std::cout;
 using std::string;
+
+#endif
