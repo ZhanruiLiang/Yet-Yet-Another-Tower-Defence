@@ -1,11 +1,12 @@
 #include "gridmap.h"
 
-#include <cassert>
-#include <ciso646> // For "and" "or" "not"
-#include <cstddef> // For "NULL"
-#include <queue>   // For "priority_queue"
+#include <cassert> // For: assert
+#include <ciso646> // For: and or not
+#include <cstddef> // For: NULL
+#include <queue>   // For: priority_queue
 
 #ifdef DEBUG
+#include <cstdio>
 #define VALID_COORD \
     assert(x >= 0 and x < _width and y >= 0 and y < _height);
 #endif
@@ -45,8 +46,10 @@ GridMap::Grid::~Grid() {
 
 
 // GridMap constructor 
-GridMap::GridMap(int width, int height)
+GridMap::GridMap(int width, int height, int grid_size)
     :_grids(NULL),
+     _test_grids(NULL),
+     _grid_size(grid_size),
      _width(width),
      _height(height),
      _source_x(0),
@@ -85,9 +88,6 @@ void GridMap::setSource(int x, int y) {
 
 // Set the target coordinate of the map
 void GridMap::setTarget(int x, int y) {
-#ifdef DEBUG
-    VALID_COORD
-#endif
     _target_x = x;
     _target_y = y;
 }
@@ -95,6 +95,8 @@ void GridMap::setTarget(int x, int y) {
 
 // Set whether the grid at the given coordinate is walkable
 void GridMap::setWalkableAt(int x, int y, bool walkable) {
+    x = toGridX(x);
+    y = toGridY(y);
 #ifdef DEBUG
     VALID_COORD
 #endif
@@ -113,6 +115,8 @@ void GridMap::clearCreepsInfo() {
 
 // Set the given grid to be have creeps on it
 void GridMap::addCreepsAt(int x, int y) {
+    x = toGridX(x);
+    y = toGridY(y);
 #ifdef DEBUG
     VALID_COORD
 #endif
@@ -122,6 +126,9 @@ void GridMap::addCreepsAt(int x, int y) {
 
 // Check whether a tower can be built at the given coordinate
 bool GridMap::canBuildAt(int x, int y) {
+
+    x = toGridX(x);
+    y = toGridY(y);
 
     // Reset _test_grids info
     for (int i = 0; i < _height; ++i) {
@@ -134,14 +141,26 @@ bool GridMap::canBuildAt(int x, int y) {
     // or it's not walkable(has built a tower on it)
     if (_test_grids[y][x].has_creeps or 
         not _test_grids[y][x].is_walkable) {
+#ifdef DEBUG
+        printf("Cannot build at (%d, %d), (Has Creep or Tower)\n",
+               x, y);
+#endif
         return false;
     }
 
     // Update route on _test_grids
     _updateRouteHelper(_test_grids);
 
+    // Convert source coordinate
+    int source_x = toGridX(_source_x);
+    int source_y = toGridY(_source_y);
+
     // Check whether the routes from source to target is blocked
-    if (_test_grids[_source_y][_source_x].direction == NONE) {
+    if (_test_grids[source_y][source_x].direction == NONE) {
+#ifdef DEBUG
+        printf("Cannot build at (%d, %d), (Route Blocked)\n",
+               x, y);
+#endif
         return false;
     }
 
@@ -151,6 +170,10 @@ bool GridMap::canBuildAt(int x, int y) {
             if (_test_grids[i][j].has_creeps and 
                 _test_grids[i][j].direction == NONE) {
                 return false;
+#ifdef DEBUG
+        printf("Cannot build at (%d, %d), (Creeps Blocked)\n",
+               x, y);
+#endif
             }
         }
     }
@@ -230,10 +253,14 @@ void GridMap::_updateRouteHelper(Grid **grids) {
     //        and mark all grids as un-visited
     _clearGridsFlags(grids);
 
+    int target_x = toGridX(_target_x);
+    int target_y = toGridY(_target_y);
+
     // Step2: Begin Greedy Search
     std::priority_queue<GreedyNode> pq;
-    pq.push(GreedyNode(_target_x, _target_y, 0));
-    grids[_target_y][_target_x].visited = true;
+    pq.push(GreedyNode(target_x, target_y, 0));
+
+    grids[target_y][target_x].visited = true;
 
     while (not pq.empty()) {
 
@@ -309,11 +336,29 @@ int GridMap::getHeight() const {
     return _height;
 }
 
+
+// Get the direction the creeps should head for
+// at the given coordinate
 GridMap::Direction GridMap::getDirectionAt(int x, int y) const {
-#ifdef DEBUG
-    VALID_COORD
-#endif
+    x = toGridX(x);
+    y = toGridY(y);
     return _grids[y][x].direction;
+}
+
+int GridMap::toGridCenterX(int x) const {
+    return x / _grid_size * _grid_size + _grid_size / 2;  
+}
+
+int GridMap::toGridCenterY(int y) const {
+    return y / _grid_size * _grid_size + _grid_size / 2;  
+}
+
+int GridMap::toGridX(int x) const {
+    return x / _grid_size; 
+}
+
+int GridMap::toGridY(int y) const {
+    return y / _grid_size;
 }
 
 
@@ -338,9 +383,7 @@ bool GridMap::_isValidCoord(int x, int y) const {
 
 #ifdef DEBUG
 
-#include <cstdio>
-
-void GridMap::debugPrint() const {
+void GridMap::printRoute() const {
     printf("  ");
     for (int i = 0; i < _width; ++i) {
         printf("%2d", i);
@@ -367,6 +410,15 @@ void GridMap::debugPrint() const {
                     putchar('/'); break;
             }
             printf(" ");
+        }
+        puts("");
+    }
+}
+
+void GridMap::printWalkable() const {
+    for (int i = 0; i < _height; ++i) {
+        for (int j = 0; j < _width; ++j) {
+            printf("%c ", _grids[i][j].is_walkable ? ' ' : 'X');
         }
         puts("");
     }

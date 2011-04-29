@@ -4,17 +4,45 @@
 // GridMap class
 // Holds a two-dimensional array of grids and calculates
 // the routes of the creeps.
+//
+// *Note*: All the public methods involving the coodinates
+// uses the world coordinates instead of grid coordinates.
+//
+// *Note*: In each iteration of the game loop:
+// The calling sequence should be like this:
+//
+// loop: 
+//      gm->clearCreepsInfo();
+//      for each creep in creeps:
+//          int x = creep.getX(), y = creep.getY();
+//          gm->addCreepsAt(x, y);
+//
+//      if gm->canBuildAt(tower_x, tower_y):
+//          int x = gm->toGridCenterX(tower_x);
+//          int y = gm->toGridCenterY(tower_y);
+//          // ...
+//          // build tower stuff here
+//          gm->setWalkableAt(x, y, false);
 class GridMap {
     
     public:
 
         // enum the directions
-        enum Direction {NONE, LEFT, RIGHT, UP, DOWN, 
-                        TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT};
+        enum Direction {
+            NONE        = 0x0,  // 0000
+            LEFT        = 0x1,  // 0001
+            RIGHT       = 0x2,  // 0010
+            UP          = 0x4,  // 0100
+            DOWN        = 0x8,  // 1000 
+            TOPLEFT     = 0x5,  // 0101
+            TOPRIGHT    = 0x6,  // 0110
+            BOTTOMLEFT  = 0x9,  // 1001
+            BOTTOMRIGHT = 0xA   // 1010
+        };
 
         // GridMap constructor, takes two params namely the 
         // width and height of the map
-        GridMap(int width, int height);
+        GridMap(int width, int height, int grid_size);
 
         // destructor
         ~GridMap();
@@ -32,7 +60,8 @@ class GridMap {
         // Set whether the grid at the given coordinate is walkable
         // *Note*: When a tower is built, this method should be
         // called to set the correponding coordinate to be 
-        // not walkable
+        // not walkable, and when a tower is destroyed, this method
+        // should also be called to set the grid to be walkable
         void setWalkableAt(int x, int y, bool walkable);
 
         // Set all grids to have no creeps on them
@@ -54,19 +83,25 @@ class GridMap {
         // a new tower is built or a present tower is destroyed.
         void updateRoute();
 
-        // Get the width of the map
+        // Get the width(number of horizontal grids) of the map 
         int getWidth() const;
 
-        // Get the height of the map
+        // Get the height(number of vertical grids) of the map
         int getHeight() const;
 
         // Get the direction the creeps should head for
         // at the given coordinate
         Direction getDirectionAt(int x, int y) const;
 
+        // Adjust the given coordinate to be the nearest center
+        // of a grid
+        int toGridCenterX(int x) const;
+        int toGridCenterY(int y) const;
+
 
 #ifdef DEBUG
-        void debugPrint() const;
+        void printRoute() const;
+        void printWalkable() const;
 #endif
 
     private:
@@ -84,6 +119,10 @@ class GridMap {
 
 
     // Helper functions
+        
+        // Convert from world coordinate to grid coordinate
+        int toGridX(int x) const;
+        int toGridY(int y) const;
 
         // Clear all grids' directions and mark them as unvisited.
         // used in updateRoute()
@@ -105,6 +144,9 @@ class GridMap {
         // the routes will be blocked
         // used in canBuildAt(int x, int y)
         Grid **_test_grids;
+
+        // Width and Height of each grid
+        int _grid_size;
 
         // Width and height of the grid map
         int _width;    
