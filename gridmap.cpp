@@ -340,9 +340,6 @@ int GridMap::getHeight() const {
 // Get the direction the creeps should head for
 // at the given coordinate
 GridMap::Direction GridMap::getDirectionAt(int x, int y) const {
-#ifdef DEBUG
-    VALID_COORD
-#endif
     x = toGridX(x);
     y = toGridY(y);
     return _grids[y][x].direction;

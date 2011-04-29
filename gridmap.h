@@ -28,8 +28,17 @@ class GridMap {
     public:
 
         // enum the directions
-        enum Direction {NONE, LEFT, RIGHT, UP, DOWN, 
-                        TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT};
+        enum Direction {
+            NONE        = 0x0,  // 0000
+            LEFT        = 0x1,  // 0001
+            RIGHT       = 0x2,  // 0010
+            UP          = 0x4,  // 0100
+            DOWN        = 0x8,  // 1000 
+            TOPLEFT     = 0x5,  // 0101
+            TOPRIGHT    = 0x6,  // 0110
+            BOTTOMLEFT  = 0x9,  // 1001
+            BOTTOMRIGHT = 0xA   // 1010
+        };
 
         // GridMap constructor, takes two params namely the 
         // width and height of the map
