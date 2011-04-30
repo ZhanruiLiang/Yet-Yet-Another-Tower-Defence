@@ -22,6 +22,11 @@ class Tower {
         // and the creep is within the tower's range
         bool attack(Creep *creep);
 
+        // Update the status of the tower
+        // *Note*: this method should be called in each iteration
+        // of the game loop
+        void update();
+
         void setType(TowerType type);
 
         // Set the coordinate of this tower on the grid map
