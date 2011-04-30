@@ -1,4 +1,4 @@
-#include "gridmap.h"
+#include "grid_map.h"
 #include "creep.h"
 
 #include <cassert>  // For: assert
@@ -8,7 +8,9 @@ Creep::Creep()
     :_grid_map(NULL),
      _x(.0),
      _y(.0),
-     _velocity(.0) {     
+     _speed(.0),
+     _health(0),
+     _type(0){     
 }
 
 Creep::~Creep() {
@@ -37,19 +39,22 @@ void Creep::update() {
 #endif
     
     if (dir & GridMap::RIGHT) {
-        _x += _velocity;
+        _x += _speed;
     }
     if (dir & GridMap::LEFT) {
-        _x -= _velocity; 
+        _x -= _speed; 
     }
     if (dir & GridMap::UP) {
-        _y -= _velocity; 
+        _y -= _speed; 
     }
     if (dir & GridMap::DOWN) {
-        _y += _velocity; 
+        _y += _speed; 
     }
 }
 
+void Creep::setType(CreepType type) {
+    _type = type;
+}
 
 void Creep::setX(double x) {
     _x = x;
@@ -59,8 +64,16 @@ void Creep::setY(double y) {
     _y = y;
 }
 
-void Creep::setVelocity(double velocity) {
-    _velocity = velocity;
+void Creep::setSpeed(double speed) {
+    _speed = speed;
+}
+
+void Creep::setHealth(int health) {
+    _health = health;
+}
+
+Creep::CreepType Creep::getType() const {
+    return _type;
 }
 
 double Creep::getX() const {
@@ -71,6 +84,14 @@ double Creep::getY() const {
     return _y;
 }
 
-double Creep::getVelocity() const {
-    return _velocity;
+double Creep::getSpeed() const {
+    return _speed;
+}
+
+int Creep::getHealth() const {
+    return _health;
+}
+
+bool Creep::isDead() const {
+    return _health <= 0;
 }

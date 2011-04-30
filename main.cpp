@@ -1,9 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "gridmap.h"
+#include "grid_map.h"
 #include "creep.h"
-
+#include "creep_config.h"
+#include "creep_factory.h"
 
 #ifdef DEBUG
 
@@ -50,13 +51,14 @@ void test() {
     printf("Center of (5, 15) : (%d, %d)\n", 
            gm->toGridCenterX(5), gm->toGridCenterY(15));
 
-    Creep *creep = new Creep();
-    creep->setVelocity(10.0);
+    CreepFactory *factory = new CreepFactory();
+
+    Creep *creep = factory->getCreep(creep::NORMAL);
     creep->setX(500.0);
     creep->setY(500.0);
     creep->setGridMap(gm);
 
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 3000; ++i) {
         system("clear");    
         creep->update();
         for (int i = 0; i < 30; ++i) {
@@ -74,13 +76,11 @@ void test() {
             puts("");
         }
         printf("%d %d\n", (int)creep->getX(), (int)creep->getY());
-        usleep(100000);
+        usleep(30000);
     }
 
     delete gm;
 }
-
-
 
 #endif
 

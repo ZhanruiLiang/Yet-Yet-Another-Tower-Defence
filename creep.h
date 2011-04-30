@@ -4,12 +4,14 @@
 // Forward declarations
 class GridMap;
 
-// Base Creep class
-//
+// Creep Class
 // *Note*: All the position and velocity methods returns double
 class Creep {
 
     public:
+
+        typedef int CreepType;
+
         Creep();
         virtual ~Creep();
 
@@ -22,15 +24,29 @@ class Creep {
         // game loop
         void update();
 
+        // Set the specific type of creep
+        void setType(CreepType type);
+
+        // Set coordinate
         void setX(double x);  
         void setY(double y);
 
-        void setVelocity(double velocity);
+        void setSpeed(double speed);
+
+        void setHealth(int health);
+    
+
+        CreepType getType() const;
 
         double getX() const;
         double getY() const;
 
-        double getVelocity() const;
+        double getSpeed() const;
+
+        int getHealth() const;
+
+
+        bool isDead() const;
 
     private:
 
@@ -39,7 +55,11 @@ class Creep {
         double _x;
         double _y;
 
-        double _velocity;
+        double _speed;
+
+        int _health;
+
+        CreepType _type;
 };
 
 #endif
