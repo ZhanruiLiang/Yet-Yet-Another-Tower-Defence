@@ -72,6 +72,10 @@ void Creep::setHealth(int health) {
     _health = health;
 }
 
+void Creep::decreaseHealth(int damage) {
+    _health -= damage;
+}
+
 Creep::CreepType Creep::getType() const {
     return _type;
 }
