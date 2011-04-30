@@ -8,7 +8,7 @@ Creep::Creep()
     :_grid_map(NULL),
      _x(.0),
      _y(.0),
-     _velocity(.0),
+     _speed(.0),
      _health(0),
      _type(0){     
 }
@@ -39,16 +39,16 @@ void Creep::update() {
 #endif
     
     if (dir & GridMap::RIGHT) {
-        _x += _velocity;
+        _x += _speed;
     }
     if (dir & GridMap::LEFT) {
-        _x -= _velocity; 
+        _x -= _speed; 
     }
     if (dir & GridMap::UP) {
-        _y -= _velocity; 
+        _y -= _speed; 
     }
     if (dir & GridMap::DOWN) {
-        _y += _velocity; 
+        _y += _speed; 
     }
 }
 
@@ -64,8 +64,8 @@ void Creep::setY(double y) {
     _y = y;
 }
 
-void Creep::setVelocity(double velocity) {
-    _velocity = velocity;
+void Creep::setSpeed(double speed) {
+    _speed = speed;
 }
 
 void Creep::setHealth(int health) {
@@ -84,8 +84,8 @@ double Creep::getY() const {
     return _y;
 }
 
-double Creep::getVelocity() const {
-    return _velocity;
+double Creep::getSpeed() const {
+    return _speed;
 }
 
 int Creep::getHealth() const {
