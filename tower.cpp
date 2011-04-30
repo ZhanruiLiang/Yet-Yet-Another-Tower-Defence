@@ -23,6 +23,10 @@ bool Tower::attack(Creep *creep) {
     return false;
 }
 
+void Tower::setType(TowerType type) {
+    _type = type;
+}
+
 void Tower::setCoord(int x, int y) {
     _x = x;
     _y = y;
@@ -38,6 +42,10 @@ void Tower::setDamage(int damage) {
 
 void Tower::setCooldown(int cooldown) {
     _cooldown = cooldown;
+}
+
+Tower::TowerType Tower::getType() const {
+    return _type;
 }
 
 double Tower::getRange() const {

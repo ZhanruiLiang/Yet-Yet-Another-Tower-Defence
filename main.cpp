@@ -5,6 +5,9 @@
 #include "creep.h"
 #include "creep_config.h"
 #include "creep_factory.h"
+#include "tower.h"
+#include "tower_config.h"
+#include "tower_factory.h"
 
 #ifdef DEBUG
 

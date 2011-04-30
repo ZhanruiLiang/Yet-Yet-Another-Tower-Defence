@@ -1,4 +1,4 @@
-objects = main.o grid_map.o creep.o creep_factory.o tower.o
+objects = main.o grid_map.o creep.o creep_factory.o tower.o tower_factory.o
 flags = -Wall -DDEBUG
 compiler = g++
 
@@ -19,6 +19,10 @@ creep_factory.o : creep_factory.h creep_factory.cpp creep_config.h
 
 tower.o : tower.h tower.cpp creep.h
 	$(compiler) $(flags) -c tower.cpp
+
+tower_factory.o : tower_factory.h tower_factory.cpp tower_config.h
+	$(compiler) $(flags) -c tower_factory.cpp
+
 
 .PHONY : clean
 clean :
