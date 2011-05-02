@@ -7,17 +7,25 @@ class Creep;
 class Tower;
 class GridMap;
 
-class Engine {
+class GameEngine {
     
     public:
 
-        Engine();
-        ~Engine();
+        GameEngine();
+        ~GameEngine();
+
+        void loop();
 
     private:
+        
+        void _handleEvents();
+        void _updateCreeps();
+        void _updateTowers();
 
         std::list<Creep *> _creeps;
         std::list<Tower *> _towers;
+
+        GridMap *_grid_map;
 };
 
 #endif

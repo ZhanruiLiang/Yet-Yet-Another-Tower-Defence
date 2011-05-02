@@ -34,6 +34,8 @@ class Creep {
         void setSpeed(double speed);
 
         void setHealth(int health);
+
+        void decreaseHealth(int damage);
     
 
         CreepType getType() const;

@@ -14,7 +14,7 @@ Tower::~Tower() {
 // Return true if the cooldown count has reached 0,
 // and the creep is within the tower's range
 bool Tower::attack(Creep *creep) {
-    if (_cooldown_count == 0 and
+    if (_cooldown_count <= 0 and
         hypot(_x - creep->getX(), _y - creep->getY()) <= _range) {
         _cooldown_count = _cooldown;
         return true;
@@ -22,20 +22,48 @@ bool Tower::attack(Creep *creep) {
     return false;
 }
 
+void Tower::update() {
+    --_cooldown_count;
+}
+
+void Tower::setType(TowerType type) {
+    _type = type;
+}
+
 void Tower::setCoord(int x, int y) {
     _x = x;
     _y = y;
+}
+
+void Tower::setRange(double range) {
+    _range = range;
+}
+
+void Tower::setDamage(int damage) {
+    _damage = damage;
 }
 
 void Tower::setCooldown(int cooldown) {
     _cooldown = cooldown;
 }
 
+Tower::TowerType Tower::getType() const {
+    return _type;
+}
 
-int Tower::getX() {
+double Tower::getRange() const {
+    return _range;
+}
+
+int Tower::getDamage() const {
+    return _damage;
+}
+
+int Tower::getX() const {
     return _x;
 }
 
-int Tower::getY() {
+int Tower::getY() const {
     return _y;
 }
+

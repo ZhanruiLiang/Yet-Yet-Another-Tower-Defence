@@ -11,6 +11,8 @@ class Creep;
 class Tower {
 
     public:
+
+        typedef int TowerType;
         
         Tower();
         virtual ~Tower();
@@ -20,18 +22,33 @@ class Tower {
         // and the creep is within the tower's range
         bool attack(Creep *creep);
 
+        // Update the status of the tower
+        // *Note*: this method should be called in each iteration
+        // of the game loop
+        void update();
+
+        void setType(TowerType type);
+
         // Set the coordinate of this tower on the grid map
         // Note: this method should only be called by GridMap
         void setCoord(int x, int y);
 
         // Set the attack range of this tower
-        void setRange(int range);
+        void setRange(double range);
+
+        // Set the attack damage of this tower
+        void setDamage(int damage);
 
         // Set the cooldown (attack interval) of the tower
         void setCooldown(int cooldown);
 
+        TowerType getType() const;
+
         // Get the attack range 
-        int getRange() const;
+        double getRange() const;
+
+        // Get the attack damage
+        int getDamage() const;
 
         // Get the x and y coordinates of this tower on the grid map
         int getX() const;
@@ -41,13 +58,17 @@ class Tower {
 
         int _x, _y;          // x and y coordinates
 
-        int _range;          // attack range
+        double _range;       // attack range
+
+        int _damage;      // attack damage
 
         int _cooldown;       // cooldown (attack interval)
         int _cooldown_count; // cooldown count
                              // the attack method will actually
                              // fire a bullet only when this count
                              // drops to zero
+
+        TowerType _type;
 };
 
 #endif
