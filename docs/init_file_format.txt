@@ -1,6 +1,6 @@
 The init file of the class Clipper, with the appendix ".tdidx"(TD index), must has the following format
 
-/*code*/
+---------------------------------------------------------
 
 \section{frame}
 {
@@ -12,6 +12,6 @@ The init file of the class Clipper, with the appendix ".tdidx"(TD index), must h
 	}
 }
 
-/*end*/
+---------------------------------------------------------
 
 Comments can be write outside the frame section
