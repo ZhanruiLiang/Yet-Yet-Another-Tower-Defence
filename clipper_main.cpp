@@ -33,7 +33,7 @@ int main()
 				sbox::screen, 
 				&sbox::getRect(ccc.getX(), ccc.getY()));
 
-//		ccc.gotoAndPlay(cnt % ccc.totalFrame());
+		ccc.gotoAndPlay(cnt % ccc.totalFrame());
 		cnt++;
 		SDL_Flip(sbox::screen);
 		sbox::delay();
