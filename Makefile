@@ -1,34 +1,35 @@
-objects = main.o grid_map.o creep.o creep_factory.o tower.o tower_factory.o game_engine.o
-flags = -Wall -DDEBUG
+objects = clipper_main.o sbox.o pen.o clipper.o parser.o res_manager.o
+flags = -g -Wall -lSDL -lSDL_image -lSDL_ttf -lSDL_gfx -DDEBUG
 compiler = g++
 
-yyatd : $(objects)
-	$(compiler) $(objects) -o yyatd
+cltest: $(objects)
+	$(compiler) $(flags) $(objects) -o cltest
 
-main.o : main.cpp grid_map.h creep.h
-	$(compiler) $(flags) -c main.cpp
+clipper_main.o: clipper_main.cpp sbox.h pen.h clipper.h preinclude.h
+	$(compiler) $(flags) -c clipper_main.cpp
 
-grid_map.o : grid_map.h grid_map.cpp
-	$(compiler) $(flags) -c grid_map.cpp
+sbox.o : sbox.cpp sbox.h preinclude.h
+	$(compiler) $(flags) -c sbox.cpp
 
-creep.o : creep.h creep.cpp grid_map.h
-	$(compiler) $(flags) -c creep.cpp
+pen.o : pen.cpp sbox.h pen.h preinclude.h
+	$(compiler) $(flags) -c pen.cpp
 
-creep_factory.o : creep_factory.h creep_factory.cpp creep_config.h
-	$(compiler) $(flags) -c creep_factory.cpp
+clipper.o : clipper.cpp clipper.h parser.h sbox.h sysinfo.h preinclude.h\
+	res_manager.h
+	$(compiler) $(flags) -c clipper.cpp
 
-tower.o : tower.h tower.cpp creep.h
-	$(compiler) $(flags) -c tower.cpp
+parser.o : parser.cpp parser.h
+	$(compiler) $(flags) -c parser.cpp
 
-tower_factory.o : tower_factory.h tower_factory.cpp tower_config.h
-	$(compiler) $(flags) -c tower_factory.cpp
+res_manager.o : res_manager.cpp res_manager.h preinclude.h
+	$(compiler) $(flags) -c res_manager.cpp
 
-game_engine.o : grid_map.h tower.h tower_config.h tower_factory.h \
-			    creep.h creep_config.h creep_factory.h
-	$(compiler) $(flags) -c game_engine.cpp
+.PHONY: clean
+
+clean:
+	rm $(objects) cltest
 
 
 
-.PHONY : clean
-clean :
-	rm yyatd $(objects)
+
+
