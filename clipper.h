@@ -4,6 +4,7 @@
 #include "preinclude.h"
 #include "sbox.h"
 #include <vector>
+#include "res_manager.h"
 using std::vector;
 
 class Clipper
@@ -11,13 +12,17 @@ class Clipper
 	public:
 		Clipper();
 		~Clipper();
-		bool initFrom(const char * filename);
+		void setResManager(ResManager * ptr_rm);
+
+		
 		//set,get x, y
 		void setX(int x);
 		void setY(int y);
 		int getX();
 		int getY();
 
+		//XXX: hide some features first
+		/*
 		//set,get the scale, width, height
 		//attention, these three ones with keep sync automatically.
 		//e.g. if you set the scale, the other two will change, too
@@ -30,6 +35,10 @@ class Clipper
 		double getWidth();
 		void setHeight(double height);
 		double getHeight();
+		*/
+
+		void setDepth(int depth);
+		int getDepth();
 
 		// visible
 		void setVisible(bool val);
@@ -45,23 +54,44 @@ class Clipper
 		//bool gotoAndStop(const string & lable);
 
 		int currentFrame();
+		int totalFrame();
 
 		void play();
 
 		void stop();
 
-	private:
+		//init the static members, from a floder "$filename"
+		static bool initFrom(const string & filename);
+	protected:
+		typedef ResManager::ID_t ID_t;
+		// the frame struct, to store a frame's information
+		struct Frame
+		{
+			ID_t id;
+			string label;
+			Frame(ID_t id0, string label0):id(id0),label(label0){}
+		};
+
 		int _x, _y;
 		int _width, _height;
 		double _scale;
+		int _depth;
 		bool _visible;
 		int _frame;
-		int _frame_cnt;
 		bool _stop;
-		vector< SDL_Surface* >  _surfaces;
+
+		static ResManager * _res_manager;
+		static vector< Frame >  _frames;
 
 		// methods
 		bool _changeFrame(int num);
+
+		// static methods
+		// add some frames from a file(*.png), the format is defined between
+		//    between begin and end
+		bool static _addFramesFromFile(string filename, string::iterator begin, string::iterator end);
+		// add a frame from a specific rect of the source surface
+		void static _addFrame(SDL_Surface * surface, SDL_Rect rect, string label);
 };
 
 #endif

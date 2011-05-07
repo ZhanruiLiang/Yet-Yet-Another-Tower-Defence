@@ -2,12 +2,14 @@
 #define PARSER_H
 
 #include<string>
-#include<iterater>
+#include<iterator>
 #include<algorithm>
 
 using std::string;
 typedef string::iterator strIter;
 
+// a section has the format:
+//    \section{sectionName}{sectionContent}
 class Section
 {
 	public:
@@ -22,41 +24,45 @@ class Section
 		//this method may be override, 
 		// since the return type may be different
 		string getContent();
+
+		void markName(strIter begin, strIter end);
+		void markContent(strIter begin, strIter end);
+		void markAll(strIter begin, strIter end);
 	protected:
-		//TODO:finish it
+		strIter _beg,
+				_end,
+				_name_beg,
+				_name_end,
+				_cont_beg,
+				_cont_end;
 };
 
-class EqlSection: public Section
-{
-	public:
-		EqlSection();
-		string getContent();
-	private:
-		//TODO
-};
+typedef Section EqlSection;
 
 // The parser class
 class Parser
 {
 	public:
-		Parser();
 		// init, tell the parser where to begin and end
 		void init(strIter begin, strIter end);
+		// usage, use nextSection() first, then use currentSection() to 
+		// get
 		bool virtual nextSection();
 		Section virtual currentSection();
 		bool isEnd();
 	protected:
-		// TODO
+		strIter _begin,
+				_end,
+				_current;
+		Section _section;
 };
 
 class EqlParser: public Parser
 {
 	public:
-		EqlParser();
 		bool virtual nextSection();
-		Section virtual currentSection();
-	private:
-		// TODO
+	protected:
+		//none 
 };
 bool decode(const strIter begin,
 		const strIter end,
