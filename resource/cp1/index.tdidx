@@ -1,0 +1,10 @@
+\section{frame}
+{
+	\section{go.png}
+	{
+		width=64
+		height=64
+		count=3
+		label=
+	}
+}
