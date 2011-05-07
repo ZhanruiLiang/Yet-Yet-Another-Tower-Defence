@@ -1,0 +1,17 @@
+The init file of the class Clipper, with the appendix ".tdidx"(TD index), must has the following format
+
+/*code*/
+
+\section{frame}
+{
+	\section{pic1.png}
+	{
+		width = 32
+		count = 5 
+		label = gogogo
+	}
+}
+
+/*end*/
+
+Comments can be write outside the frame section
