@@ -1,12 +1,16 @@
-objects = clipper_main.o sbox.o pen.o clipper.o parser.o res_manager.o
+objects = sbox.o pen.o clipper.o parser.o res_manager.o graphic_engine.o\
+		  graTest.o
 flags = -g -Wall -lSDL -lSDL_image -lSDL_ttf -lSDL_gfx -DDEBUG
 compiler = g++
 
-cltest: $(objects)
-	$(compiler) $(flags) $(objects) -o cltest
+graTest: $(objects) 
+	$(compiler) $(flags) $(objects) -o graTest
 
-clipper_main.o: clipper_main.cpp sbox.h pen.h clipper.h preinclude.h
-	$(compiler) $(flags) -c clipper_main.cpp
+graTest.o: graTest.cpp graphic_engine.h clipper.h sbox.h preinclude.h
+	$(compiler) $(flags) -c graTest.cpp
+
+graphic_engine.o: graphic_engine.cpp graphic_engine.h sbox.h clipper.h preinclude.h
+	$(compiler) $(flags) -c graphic_engine.cpp
 
 sbox.o : sbox.cpp sbox.h preinclude.h
 	$(compiler) $(flags) -c sbox.cpp
@@ -27,7 +31,7 @@ res_manager.o : res_manager.cpp res_manager.h preinclude.h
 .PHONY: clean
 
 clean:
-	rm $(objects) cltest
+	rm $(objects) graTest
 
 
 

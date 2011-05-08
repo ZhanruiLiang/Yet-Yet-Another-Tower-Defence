@@ -12,7 +12,7 @@ class Clipper
 	public:
 		Clipper();
 		~Clipper();
-		void setResManager(ResManager * ptr_rm);
+		static void setResManager(ResManager * ptr_rm);
 
 		
 		//set,get x, y
@@ -60,6 +60,8 @@ class Clipper
 
 		void stop();
 
+		void loop();
+
 		//init the static members, from a floder "$filename"
 		static bool initFrom(const string & filename);
 	protected:
@@ -69,6 +71,7 @@ class Clipper
 		{
 			ID_t id;
 			string label;
+			Frame(){}
 			Frame(ID_t id0, string label0):id(id0),label(label0){}
 		};
 

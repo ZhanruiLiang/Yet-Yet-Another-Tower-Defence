@@ -104,7 +104,6 @@ bool Clipper::_addFramesFromFile(string filename, strIter begin, strIter end)
 	EqlParser par1;
 	par1.init(begin, end);
 	// open the picture file
-	cout << "filename is " << filename << '\n';
 	SDL_Surface * file =  sbox::loadImage(filename);
 	if(file == NULL) return false;
 
@@ -130,7 +129,6 @@ bool Clipper::_addFramesFromFile(string filename, strIter begin, strIter end)
 	for(int i = 0; i < count; i++)
 	{
 		_addFrame(file, rect, (i==0?label:string("")));
-		cout << i << ' ';
 		rect.x += width;
 	}
 	return true;
@@ -158,10 +156,6 @@ void Clipper::setY(int y)
 	_y = y;
 }
 
-void Clipper::setDepth(int dep)
-{
-	_depth = dep;
-}
 int Clipper::getX()
 {
 	return _x;
@@ -191,17 +185,17 @@ double Clipper::getScale()
 {
 	return _scale;
 }
+*/
 
-void setDepth(int depth)
+void Clipper::setDepth(int depth)
 {
 	_depth = depth;
 }
 
-int getDepth()
+int Clipper::getDepth()
 {
 	return _depth;
 }
-*/
 
 void Clipper::setVisible(bool val)
 {
@@ -271,4 +265,17 @@ void Clipper::play()
 void Clipper::stop()
 {
 	_stop = true;
+}
+
+void Clipper::loop()
+{
+	if(!_stop)
+	{
+		_frame++;
+		if(_frame == _frames.size())
+			_frame = 0;
+	}
+	else
+	{
+	}
 }
