@@ -7,7 +7,7 @@
 using std::vector;
 
 //usage:
-// step 1. init using the static method 'initFrom', e.g. Clipper::initFrom("resource/cp1") see cp1 for details
+// step 1. init using the method 'initFrom', e.g. Clipper::initFrom("resource/cp1") see cp1 for details
 // step 2. now the class is ready, just use as usual
 // step 3. when the class is no longer needed, use static method Clipper::clean() to clean
 //
@@ -23,6 +23,7 @@ class Clipper
 {
 	public:
 		Clipper();
+		Clipper(const string & filename);
 		~Clipper();
 		
 		//set,get x, y
@@ -63,15 +64,21 @@ class Clipper
 
 		void loop();
 
-		//init the static members, from a floder "$filename"
-		static bool initFrom(const string & filename);
+		//init the frames, from a floder "$filename"
+		bool initFrom(const string & filename);
 		static void clean();
+
+#ifdef DEBUG
+		//debug
+		void debugPrint();
+#endif
 	protected:
 		// the frame struct, to store a frame's information
 		struct Frame
 		{
 			SDL_Surface * surface;
 			string label;
+			//methods
 			Frame(){}
 			Frame(SDL_Surface * surface0, string label0):surface(surface0)
 														 ,label(label0){}
@@ -85,17 +92,41 @@ class Clipper
 		bool _stop;
 
 	private:
-		static vector< Frame >  _frames;
+		//the FrameRecord, is used to record loaded pictures.
+		// if a record exist, then fetch it form a FrameRecord.
+		struct FrameRecord
+		{
+			string filename;
+			SDL_Rect rect;
+			SDL_Surface * surface;
+
+			FrameRecord(){}
+			FrameRecord(string fn, 
+					SDL_Rect rt, 
+					SDL_Surface * surface0 = NULL):
+				filename(fn),
+				rect(rt),
+				surface(surface0){}
+
+			bool operator==(const FrameRecord & fmRec)const
+			{
+				return (filename == fmRec.filename)&&
+					(rect.x == fmRec.rect.x)&&
+					(rect.y == fmRec.rect.y)&&
+					(rect.w == fmRec.rect.w)&&
+					(rect.h == fmRec.rect.h);
+			}
+		};
+		static vector<FrameRecord> _fm_records;
+
+		vector< Frame >  _frames;
 
 		// methods
 		bool _changeFrame(int num);
 
-		// static methods
-		// add some frames from a file(*.png), the format is defined between
+		// add some frames from a file(*.png), the format is defined 
 		//    between begin and end
-		bool static _addFramesFromFile(string filename, string::iterator begin, string::iterator end);
-		// add a frame from a specific rect of the source surface
-		void static _addFrame(SDL_Surface * surface, SDL_Rect rect, string label);
+		bool _addFramesFromFile(string filename, string::iterator begin, string::iterator end);
 };
 
 #endif

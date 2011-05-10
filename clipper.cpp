@@ -9,9 +9,23 @@ using std::stringstream;
 using std::cout;
 
 typedef vector<SDL_Surface*>::iterator SurfaceIter;
+vector<Clipper::FrameRecord> Clipper::_fm_records;
 
-std::vector< Clipper::Frame > Clipper::_frames;
-
+Clipper::Clipper(const string & filename):_scale(1.0),
+	_depth(0),
+	_visible(true),
+	_frame(0),
+	_stop(false)
+{
+	_rect.x = 0;
+	_rect.y = 0;
+	initFrom(filename);
+	if(currentFrame() < _frames.size())
+	{
+		_rect.w = getSurface()->clip_rect.w;
+		_rect.h = getSurface()->clip_rect.h;
+	}
+}
 
 Clipper::Clipper():_scale(1.0),
 	_depth(0),
@@ -21,19 +35,17 @@ Clipper::Clipper():_scale(1.0),
 {
 	_rect.x = 0;
 	_rect.y = 0;
-	_rect.w = 0;
-	_rect.h = 0;
-	if(currentFrame() < _frames.size())
-	{
-		_rect.w = getSurface()->clip_rect.w;
-		_rect.h = getSurface()->clip_rect.h;
-	}
 }
 
 void Clipper::clean()
 {
-	for(int i = 0; i < _frames.size(); i++)
-		SDL_FreeSurface(_frames[i].surface);
+	for(vector<FrameRecord>::iterator it = _fm_records.begin();
+			it != _fm_records.end();
+			it++)
+	{
+		SDL_FreeSurface(it->surface);
+	}
+	_fm_records.clear();
 }
 // initialize the clipper from files
 // the filename is a floder, it must contians:
@@ -46,6 +58,7 @@ void Clipper::clean()
 // 3. parse the string
 bool Clipper::initFrom(const string & filename)
 {
+	_frames.clear();
 	//open file
 	ifstream fin;
 	string index = filename + SYS_SEP + "index.tdidx";
@@ -112,18 +125,12 @@ bool Clipper::_addFramesFromFile(string filename, strIter begin, strIter end)
 	// open the picture file
 	SDL_Surface * file =  sbox::loadImage(filename);
 	if(file == NULL) return false;
-	//start colorkey
-	/*
-	Uint32 colorkey = SDL_MapRGB(file->format, 0, 0, 0);
-	std::cout << "Hi, " << colorkey << '\n';
-	SDL_SetColorKey(file, SDL_SRCCOLORKEY, colorkey);
-	*/
 
+	//prepare the format
 	int width;
 	int height;
 	int count;
 	string label;
-	//prepare the format
 	while(par1.nextSection())
 	{
 		EqlSection sec1 = par1.currentSection();
@@ -140,24 +147,47 @@ bool Clipper::_addFramesFromFile(string filename, strIter begin, strIter end)
 	SDL_Rect rect = sbox::getRect(0, 0, width-1, height-1);
 	for(int i = 0; i < count; i++)
 	{
-		_addFrame(file, rect, (i==0?label:string("")));
+		FrameRecord fmRec(filename, rect);
+		SDL_Surface * surface;
+		bool found = false;
+		//find in the frame records whether the same frames exist
+		for(vector<FrameRecord>::iterator it = _fm_records.begin();
+				it != _fm_records.end();
+				it++)
+		{
+			if(*it == fmRec)
+			{
+				found = true;
+				surface = it->surface;
+				break;
+			}
+		}
+		//test if already exist
+		if( found )
+		{
+			// fetch
+			_frames.push_back(Frame(surface, label));
+		}
+		else
+		{
+			//not found, create new, add record
+			surface = sbox::newSurface(rect.w, rect.h);
+			SDL_BlitSurface(file, &rect, surface, NULL);
+
+			//start colorkey
+			Uint32 colorkey = SDL_MapRGBA(surface->format, 1, 1, 1, 0xff);
+			SDL_SetColorKey(surface, SDL_SRCCOLORKEY, colorkey);
+
+			_frames.push_back(Frame(surface, label));
+
+			fmRec.surface = surface;
+			_fm_records.push_back(fmRec);
+		}
 		rect.x += width;
 	}
 	return true;
 }
 
-void Clipper::_addFrame(SDL_Surface * surface, SDL_Rect rect, string label)
-{
-	SDL_Surface * frame = sbox::newSurface(rect.w, rect.h);
-	SDL_BlitSurface(surface, &rect, frame, NULL);
-
-	//start colorkey
-	
-	Uint32 colorkey = SDL_MapRGBA(frame->format, 1, 1, 1, 0xff);
-	SDL_SetColorKey(frame, SDL_SRCCOLORKEY, colorkey);
-
-	_frames.push_back(Frame(frame, label));
-}
 
 Clipper::~Clipper()
 {
@@ -215,7 +245,9 @@ bool Clipper::getVisible()
 SDL_Surface * Clipper::getSurface()
 {
 	if(_visible)
+	{
 		return _frames[currentFrame()].surface;
+	}
 	else
 		return NULL;
 }
@@ -226,8 +258,11 @@ bool Clipper::_changeFrame(int num)
 	{
 		_frame = num;
 
-		_rect.w = getSurface()->clip_rect.w;
-		_rect.h = getSurface()->clip_rect.h;
+		if(getSurface())
+		{
+			_rect.w = getSurface()->clip_rect.w;
+			_rect.h = getSurface()->clip_rect.h;
+		}
 	}
 	else
 	{
@@ -282,10 +317,19 @@ void Clipper::loop()
 	if(!_stop)
 	{
 		_frame++;
-		if(_frame == _frames.size())
+		if(_frame >= _frames.size())
 			_frame = 0;
 	}
 	else
 	{
 	}
 }
+
+#ifdef DEBUG
+//debug
+void Clipper::debugPrint()
+{
+	using std::cout;
+	cout << "_fm_records.size(): " << _fm_records.size() << '\n';
+}
+#endif

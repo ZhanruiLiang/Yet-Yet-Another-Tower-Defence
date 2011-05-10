@@ -23,11 +23,6 @@ void canBuildAt(GridMap *gm, int x, int y) {
            gm->canBuildAt(x, y) ? "True" : "False");
 }   
 
-class DirClipper: public Clipper
-{
-};
-
-class CreepClipper: public Clipper{};
 
 void test() {
 
@@ -78,25 +73,26 @@ void test() {
     creep->setGridMap(gm);
 
 	//print
-	DirClipper::initFrom("resource/cp2");
-	CreepClipper::initFrom("resource/cp3");
-	DirClipper cps[30][30];
-	CreepClipper cpcp;
+	Clipper cps[30][30];
+	Clipper cpcp;
 
 	int width = GRID_SIZE;
 
 	for(int i = 0; i < 30; i++)
 		for(int j = 0; j < 30; j++)
 		{
+			cps[i][j].initFrom("resource/cp2");
 			cps[i][j].setY(width*i);
 			cps[i][j].setX(width*j);
 			cps[i][j].setDepth(0);
 			graEngine->addClipper(&cps[i][j]);
 		}
 
+	cpcp.initFrom("resource/cp3");
 	cpcp.setDepth(1);
 	graEngine->addClipper(&cpcp);
 
+	cpcp.debugPrint();
 	bool quit = false;
 	SDL_Event event;
 	while(!quit){
@@ -111,7 +107,7 @@ void test() {
 
         for (int i = 0; i < 30; ++i) {
             for (int j = 0; j < 30; ++j) {
-				DirClipper & cp = cps[i][j];
+				Clipper & cp = cps[i][j];
                 if (gm->getDirectionAt(j * width, i * width) 
                     == GridMap::NONE) {
 					cp.gotoAndStop(0); // X
@@ -125,8 +121,7 @@ void test() {
 		SDL_Delay(6);
     }
 
-	DirClipper::clean();
-	CreepClipper::clean();
+	Clipper::clean();
     delete gm;
 	delete graEngine;
 }
