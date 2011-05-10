@@ -47,7 +47,6 @@ class Creep {
 
         int getHealth() const;
 
-
         bool isDead() const;
 
     private:

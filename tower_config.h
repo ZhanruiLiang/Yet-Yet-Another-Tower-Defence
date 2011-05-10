@@ -13,6 +13,8 @@ namespace tower {
     };
     
     // 2D array to hold the damages of each tower at each level
+    // TODO: tower classes should not be associated with damage
+    // move them to bullets
     const int DAMAGE[TOWER_TYPES][TOWER_LEVELS] = {
         {10, 20, 50, 150, 400},       // NORMAL
         {5, 10, 25, 50, 200},         // RAPID

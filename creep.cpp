@@ -4,6 +4,10 @@
 #include <cassert>  // For: assert
 #include <cstddef>  // For: NULL
 
+inline int _sign(double n) {
+    return n > 0 ? 1 : -1;
+}
+
 Creep::Creep()
     :_grid_map(NULL),
      _x(.0),
@@ -29,27 +33,11 @@ void Creep::update() {
 #ifdef DEBUG
     assert(_grid_map != NULL);
 #endif
-
-    int x = (int)_x;
-    int y = (int)_y;
-    GridMap::Direction dir = _grid_map->getDirectionAt(x, y);
-
+/*
 #ifdef DEBUG
     assert(dir != GridMap::NONE);
 #endif
-    
-    if (dir & GridMap::RIGHT) {
-        _x += _speed;
-    }
-    if (dir & GridMap::LEFT) {
-        _x -= _speed; 
-    }
-    if (dir & GridMap::UP) {
-        _y -= _speed; 
-    }
-    if (dir & GridMap::DOWN) {
-        _y += _speed; 
-    }
+*/
 }
 
 void Creep::setType(CreepType type) {

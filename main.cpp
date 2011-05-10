@@ -8,6 +8,7 @@
 #include "tower.h"
 #include "tower_config.h"
 #include "tower_factory.h"
+#include "direction.h"
 
 #ifdef DEBUG
 
@@ -21,7 +22,7 @@ void canBuildAt(GridMap *gm, int x, int y) {
 
 void test() {
 
-    enum {GRID_SIZE = 20};
+    enum {GRID_SIZE = 32};
     
     // build map
     GridMap *gm = new GridMap(30, 30, GRID_SIZE);
@@ -61,13 +62,19 @@ void test() {
     creep->setY(500.0);
     creep->setGridMap(gm);
 
+    printf("%d, %d\n", gm->getNextX(193, 193), gm->getNextY(193, 193));
+
+    ////////
+    return;
+    ////////
+    
     for (int i = 0; i < 3000; ++i) {
         system("clear");    
         creep->update();
         for (int i = 0; i < 30; ++i) {
             for (int j = 0; j < 30; ++j) {
                 if (gm->getDirectionAt(j * 20, i * 20) 
-                    == GridMap::NONE) {
+                    == D_NONE) {
                     printf("X ");
                 } else if (i == (int)creep->getY() / 20 and 
                            j == (int)creep->getX() / 20)  {

@@ -21,6 +21,7 @@ class GameEngine {
         void _handleEvents();
         void _updateCreeps();
         void _updateTowers();
+        void _updateBullets();
 
         std::list<Creep *> _creeps;
         std::list<Tower *> _towers;
