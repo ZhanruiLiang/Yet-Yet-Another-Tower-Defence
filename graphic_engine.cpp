@@ -100,7 +100,7 @@ void GraphicEngine::loop()
 
 	_sortClipper();
 	//refresh
-	SDL_FillRect(sbox::screen, &sbox::getRect(0,0,sbox::SCREEN_WIDTH,sbox::SCREEN_HEIGHT), sbox::getColorByName("green"));
+	SDL_FillRect(sbox::screen, &sbox::getRect(0,0,sbox::SCREEN_WIDTH,sbox::SCREEN_HEIGHT), sbox::getColorByName("white"));
 	//blit all
 	for(iterator it = _cps.begin(); it != _cps.end(); it++)
 	{

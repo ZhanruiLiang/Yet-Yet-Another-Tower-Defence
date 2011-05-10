@@ -4,16 +4,26 @@
 #include "preinclude.h"
 #include "sbox.h"
 #include <vector>
-#include "res_manager.h"
 using std::vector;
 
+//usage:
+// step 1. init using the static method 'initFrom', e.g. Clipper::initFrom("resource/cp1") see cp1 for details
+// step 2. now the class is ready, just use as usual
+// step 3. when the class is no longer needed, use static method Clipper::clean() to clean
+//
+// You may want to derive this class to make more then one type of sprites. To do this:
+// class TowerClipper: public Clipper{
+//		private:
+//          ...
+//		public:
+//			...
+// };
+// you don't need to overload any methods
 class Clipper
 {
 	public:
 		Clipper();
 		~Clipper();
-		static void setResManager(ResManager * ptr_rm);
-
 		
 		//set,get x, y
 		void setX(int x);
@@ -21,22 +31,13 @@ class Clipper
 		int getX();
 		int getY();
 
-		//XXX: hide some features first
-		/*
-		//set,get the scale, width, height
-		//attention, these three ones with keep sync automatically.
-		//e.g. if you set the scale, the other two will change, too
-
-		// scale in [0,1]
-		void setScale(double scale);
-		double getScale();
 		// width and height
 		void setWidth(int width);
-		double getWidth();
+		int getWidth();
 		void setHeight(double height);
-		double getHeight();
-		*/
+		int getHeight();
 
+		//depth
 		void setDepth(int depth);
 		int getDepth();
 
@@ -64,26 +65,26 @@ class Clipper
 
 		//init the static members, from a floder "$filename"
 		static bool initFrom(const string & filename);
+		static void clean();
 	protected:
-		typedef ResManager::ID_t ID_t;
 		// the frame struct, to store a frame's information
 		struct Frame
 		{
-			ID_t id;
+			SDL_Surface * surface;
 			string label;
 			Frame(){}
-			Frame(ID_t id0, string label0):id(id0),label(label0){}
+			Frame(SDL_Surface * surface0, string label0):surface(surface0)
+														 ,label(label0){}
 		};
 
-		int _x, _y;
-		int _width, _height;
+		SDL_Rect _rect;
 		double _scale;
 		int _depth;
 		bool _visible;
 		int _frame;
 		bool _stop;
 
-		static ResManager * _res_manager;
+	private:
 		static vector< Frame >  _frames;
 
 		// methods

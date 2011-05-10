@@ -9,6 +9,10 @@
 #include "tower_config.h"
 #include "tower_factory.h"
 
+#include "preinclude.h"
+#include "clipper.h"
+#include "graphic_engine.h"
+
 #ifdef DEBUG
 
 #include <unistd.h>
@@ -19,10 +23,22 @@ void canBuildAt(GridMap *gm, int x, int y) {
            gm->canBuildAt(x, y) ? "True" : "False");
 }   
 
+class DirClipper: public Clipper
+{
+};
+
+class CreepClipper: public Clipper{};
+
 void test() {
 
     enum {GRID_SIZE = 20};
+
+	//graphic engine
+	GraphicEngine * graEngine;
+	graEngine = new GraphicEngine;
     
+	graEngine->init();
+
     // build map
     GridMap *gm = new GridMap(30, 30, GRID_SIZE);
     gm->setTarget(5 * GRID_SIZE, 5 * GRID_SIZE);
@@ -61,28 +77,58 @@ void test() {
     creep->setY(500.0);
     creep->setGridMap(gm);
 
-    for (int i = 0; i < 3000; ++i) {
-        system("clear");    
+	//print
+	DirClipper::initFrom("resource/cp2");
+	CreepClipper::initFrom("resource/cp3");
+	DirClipper cps[30][30];
+	CreepClipper cpcp;
+
+	int width = GRID_SIZE;
+
+	for(int i = 0; i < 30; i++)
+		for(int j = 0; j < 30; j++)
+		{
+			cps[i][j].setY(width*i);
+			cps[i][j].setX(width*j);
+			cps[i][j].setDepth(0);
+			graEngine->addClipper(&cps[i][j]);
+		}
+
+	cpcp.setDepth(1);
+	graEngine->addClipper(&cpcp);
+
+	bool quit = false;
+	SDL_Event event;
+	while(!quit){
+		while(SDL_PollEvent(&event)){
+			if(event.type == SDL_QUIT)
+				quit = true;
+		}
+
         creep->update();
+		cpcp.setX(creep->getX());
+		cpcp.setY(creep->getY());
+
         for (int i = 0; i < 30; ++i) {
             for (int j = 0; j < 30; ++j) {
-                if (gm->getDirectionAt(j * 20, i * 20) 
+				DirClipper & cp = cps[i][j];
+                if (gm->getDirectionAt(j * width, i * width) 
                     == GridMap::NONE) {
-                    printf("X ");
-                } else if (i == (int)creep->getY() / 20 and 
-                           j == (int)creep->getX() / 20)  {
-                    printf("o ");
+					cp.gotoAndStop(0); // X
                 } else {
-                    printf("  ");
+					cp.gotoAndStop(2); // _
                 }
             }
-            puts("");
         }
-        printf("%d %d\n", (int)creep->getX(), (int)creep->getY());
-        usleep(30000);
+		graEngine->loop();
+		//use this delay function temporally
+		SDL_Delay(6);
     }
 
+	DirClipper::clean();
+	CreepClipper::clean();
     delete gm;
+	delete graEngine;
 }
 
 #endif

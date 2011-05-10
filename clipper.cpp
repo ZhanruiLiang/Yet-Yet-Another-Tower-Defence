@@ -10,24 +10,30 @@ using std::cout;
 
 typedef vector<SDL_Surface*>::iterator SurfaceIter;
 
-ResManager * Clipper::_res_manager;
 std::vector< Clipper::Frame > Clipper::_frames;
 
 
-Clipper::Clipper():_x(0),_y(0),
-	_width(0),_height(0),
-	_scale(1.0),
+Clipper::Clipper():_scale(1.0),
 	_depth(0),
 	_visible(true),
 	_frame(0),
 	_stop(false)
 {
-
+	_rect.x = 0;
+	_rect.y = 0;
+	_rect.w = 0;
+	_rect.h = 0;
+	if(currentFrame() < _frames.size())
+	{
+		_rect.w = getSurface()->clip_rect.w;
+		_rect.h = getSurface()->clip_rect.h;
+	}
 }
 
-void Clipper::setResManager(ResManager * ptr_rm)
+void Clipper::clean()
 {
-	_res_manager = ptr_rm;
+	for(int i = 0; i < _frames.size(); i++)
+		SDL_FreeSurface(_frames[i].surface);
 }
 // initialize the clipper from files
 // the filename is a floder, it must contians:
@@ -106,6 +112,12 @@ bool Clipper::_addFramesFromFile(string filename, strIter begin, strIter end)
 	// open the picture file
 	SDL_Surface * file =  sbox::loadImage(filename);
 	if(file == NULL) return false;
+	//start colorkey
+	/*
+	Uint32 colorkey = SDL_MapRGB(file->format, 0, 0, 0);
+	std::cout << "Hi, " << colorkey << '\n';
+	SDL_SetColorKey(file, SDL_SRCCOLORKEY, colorkey);
+	*/
 
 	int width;
 	int height;
@@ -138,9 +150,13 @@ void Clipper::_addFrame(SDL_Surface * surface, SDL_Rect rect, string label)
 {
 	SDL_Surface * frame = sbox::newSurface(rect.w, rect.h);
 	SDL_BlitSurface(surface, &rect, frame, NULL);
-	ID_t id = _res_manager->addSurface(frame);
 
-	_frames.push_back(Frame(id, label));
+	//start colorkey
+	
+	Uint32 colorkey = SDL_MapRGBA(frame->format, 1, 1, 1, 0xff);
+	SDL_SetColorKey(frame, SDL_SRCCOLORKEY, colorkey);
+
+	_frames.push_back(Frame(frame, label));
 }
 
 Clipper::~Clipper()
@@ -148,44 +164,33 @@ Clipper::~Clipper()
 }
 void Clipper::setX(int x)
 {
-	_x = x;
+	_rect.x = x;
 }
 
 void Clipper::setY(int y)
 {
-	_y = y;
+	_rect.y = y;
 }
 
 int Clipper::getX()
 {
-	return _x;
+	return _rect.x;
 }
 
 int Clipper::getY()
 {
-	return _y;
+	return _rect.y;
 }
 
-/*
-// if the scale is set, the height and width will be reset to new value
-// 	scale * widht0 = width
-//	width0 = width / scale
-//  width1 / scale1 = width2 / scale2
-//  width2 = width1 * scale2 / scale1
-void Clipper::setScale(double scale)
+int Clipper::getWidth()
 {
-	if(scale < 0.001)
-		scale = 0.001;
-	_width = _width * scale / _scale;
-	_height = _height * scale / _scale;
-	_scale = scale;
+	return _rect.w;
 }
 
-double Clipper::getScale()
+int Clipper::getHeight()
 {
-	return _scale;
+	return _rect.h;
 }
-*/
 
 void Clipper::setDepth(int depth)
 {
@@ -210,7 +215,7 @@ bool Clipper::getVisible()
 SDL_Surface * Clipper::getSurface()
 {
 	if(_visible)
-		return _res_manager->getSurface(_frames[currentFrame()].id);
+		return _frames[currentFrame()].surface;
 	else
 		return NULL;
 }
@@ -218,7 +223,12 @@ SDL_Surface * Clipper::getSurface()
 bool Clipper::_changeFrame(int num)
 {
 	if(num < _frames.size())
+	{
 		_frame = num;
+
+		_rect.w = getSurface()->clip_rect.w;
+		_rect.h = getSurface()->clip_rect.h;
+	}
 	else
 	{
 #ifdef DEBUG

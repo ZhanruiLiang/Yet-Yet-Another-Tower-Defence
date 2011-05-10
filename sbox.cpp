@@ -4,12 +4,12 @@
 namespace sbox
 {
 	//vars
-	const int SCREEN_WIDTH = 640;
-	const int SCREEN_HEIGHT = 480;
-	const int SCREEN_BPP = 32;
-	const int MAX_FPS = 40;
+	int SCREEN_WIDTH = 640;
+	int SCREEN_HEIGHT = 480;
+	int SCREEN_BPP = 32;
+	int MAX_FPS = 24;
 	SDL_Surface * screen = NULL;
-	
+
 	vector<ColorNamePair> _color_name;
 
 	//funcs
@@ -19,7 +19,7 @@ namespace sbox
 			return false;
 
 		screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, 
-				SCREEN_BPP, SDL_HWSURFACE|SDL_DOUBLEBUF );
+				SCREEN_BPP, SDL_HWSURFACE|SDL_DOUBLEBUF);
 
 		if( screen == NULL )
 			return false;
@@ -74,6 +74,37 @@ namespace sbox
 		SDL_BlitSurface( source, clip, destination, &offset );
 	}
 
+	/*
+	 * Return the pixel value at (x, y)
+	 * NOTE: The surface must be locked before calling this!
+	 */
+	Uint32 getPixel(SDL_Surface *surface, int x, int y)
+	{
+		int bpp = surface->format->BytesPerPixel;
+		/* Here p is the address to the pixel we want to retrieve */
+		Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+		switch(bpp) {
+			case 1:
+				return *p;
+
+			case 2:
+				return *(Uint16 *)p;
+
+			case 3:
+				if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+					return p[0] << 16 | p[1] << 8 | p[2];
+				else
+					return p[0] | p[1] << 8 | p[2] << 16;
+
+			case 4:
+				return *(Uint32 *)p;
+
+			default:
+				return 0;       /* shouldn't happen, but avoids warnings */
+		}
+	}
+
 	SDL_Color get_SDL_Color(Uint8 r, Uint8 g, Uint8 b)
 	{
 		SDL_Color color;
@@ -97,7 +128,13 @@ namespace sbox
 	{
 		SDL_Surface * surface = NULL;
 		SDL_Surface * surface1 = NULL;
-		surface = SDL_CreateRGBSurface(0,w,h,32,0,0,0,0);
+		//surface = SDL_CreateRGBSurface(0,w,h,32,0,0,0,0);
+		surface = SDL_CreateRGBSurface(0,w,h,32,
+				0xff000000,
+				0x00ff0000,
+				0x0000ff00,
+				0x000000ff);
+		
 		surface1 = SDL_DisplayFormat(surface);
 		SDL_FreeSurface(surface);
 		return surface1;

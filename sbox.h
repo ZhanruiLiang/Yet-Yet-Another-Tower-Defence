@@ -22,10 +22,10 @@ namespace sbox
 
 	// constants and variables
 
-	extern const int SCREEN_WIDTH;
-	extern const int SCREEN_HEIGHT;
-	extern const int SCREEN_BPP;
-	extern const int MAX_FPS;
+	extern int SCREEN_WIDTH;
+	extern int SCREEN_HEIGHT;
+	extern int SCREEN_BPP;
+	extern int MAX_FPS;
 
 	extern vector<ColorNamePair> _color_name;
 
@@ -44,6 +44,7 @@ namespace sbox
 			SDL_Surface* source,
 			SDL_Surface* destination,
 			SDL_Rect* clip = NULL );
+	Uint32 getPixel(SDL_Surface *, int x, int y);
 
 	//
 	SDL_Color get_SDL_Color(Uint8 r, Uint8 g, Uint8 b);
