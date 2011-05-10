@@ -10,10 +10,6 @@
 #include "tower_factory.h"
 #include "direction.h"
 
-#include "preinclude.h"
-#include "clipper.h"
-#include "graphic_engine.h"
-
 #ifdef DEBUG
 
 #include <unistd.h>
@@ -24,11 +20,35 @@ void canBuildAt(GridMap *gm, int x, int y) {
            gm->canBuildAt(x, y) ? "True" : "False");
 }   
 
+void next_test() {
+    enum {GRID_SIZE = 32};
+    
+    // build map
+    GridMap *gm = new GridMap(30, 30, GRID_SIZE);
+    gm->setTarget(5 * GRID_SIZE, 5 * GRID_SIZE);
 
-void test() {
+    for (int i = 0; i < 20; ++i) {
+        gm->setWalkableAt(10 * GRID_SIZE, i * GRID_SIZE, false);
+    }
 
-    enum {GRID_SIZE = 20};
+    for (int i = 10; i < 20; ++i) {
+        gm->setWalkableAt(i * GRID_SIZE, 10 * GRID_SIZE, false);
+    }
 
+    gm->updateRoute();
+
+    for (int i = 0; i < 30; ++i) {
+        for (int j = 0; j < 30; ++j) {
+            printf("%d,%d ", gm->getNextX(j * 32 + 16, i * 32 + 16), gm->getNextY(j * 32 + 16, i * 32 + 16));
+        }
+        puts("");
+    }
+}
+
+void build_test() {
+
+    enum {GRID_SIZE = 32};
+    
     // build map
     GridMap *gm = new GridMap(30, 30, GRID_SIZE);
     gm->setTarget(5 * GRID_SIZE, 5 * GRID_SIZE);
@@ -67,63 +87,62 @@ void test() {
     creep->setY(500.0);
     creep->setGridMap(gm);
 
-	//graphic engine
-	GraphicEngine * graEngine;
-	graEngine = new GraphicEngine;
+    printf("%d, %d\n", gm->getNextX(193, 193), gm->getNextY(193, 193));
+}
+
+
+void move_test() {
+   
+    enum {GRID_SIZE = 32};
     
-	graEngine->init();
+    // build map
+    GridMap *gm = new GridMap(30, 30, GRID_SIZE);
+    gm->setTarget(5 * GRID_SIZE, 5 * GRID_SIZE);
 
-	Clipper cps[30][30];
-	Clipper cpcp;
-
-	int width = GRID_SIZE;
-
-	for(int i = 0; i < 30; i++)
-		for(int j = 0; j < 30; j++)
-		{
-			cps[i][j].initFrom("resource/cp2");
-			cps[i][j].setY(width*i);
-			cps[i][j].setX(width*j);
-			cps[i][j].setDepth(0);
-			graEngine->addClipper(&cps[i][j]);
-		}
-
-	cpcp.initFrom("resource/cp3");
-	cpcp.setDepth(1);
-	graEngine->addClipper(&cpcp);
-
-	cpcp.debugPrint();
-	bool quit = false;
-	SDL_Event event;
-	while(!quit){
-		while(SDL_PollEvent(&event)){
-			if(event.type == SDL_QUIT)
-				quit = true;
-		}
-
-        creep->update();
-		cpcp.setX(creep->getX());
-		cpcp.setY(creep->getY());
-
-        for (int i = 0; i < 30; ++i) {
-            for (int j = 0; j < 30; ++j) {
-				Clipper & cp = cps[i][j];
-                if (gm->getDirectionAt(j * width, i * width) 
-                    == D_NONE) {
-					cp.gotoAndStop(0); // X
-                } else {
-					cp.gotoAndStop(2); // _
-                }
-            }
-        }
-		graEngine->loop();
-		//use this delay function temporally
-		SDL_Delay(6);
+    for (int i = 0; i < 20; ++i) {
+        gm->setWalkableAt(10 * GRID_SIZE, i * GRID_SIZE, false);
     }
 
-	Clipper::clean();
+    for (int i = 10; i < 20; ++i) {
+        gm->setWalkableAt(i * GRID_SIZE, 10 * GRID_SIZE, false);
+    }
+
+    gm->updateRoute();
+
+    gm->printRoute();
+   // return;
+
+
+    CreepFactory *factory = new CreepFactory();
+
+    Creep *creep = factory->getCreep(creep::NORMAL);
+
+    creep->setGridMap(gm);
+    creep->setX(500.0);
+    creep->setY(500.0);
+
+    for (int i = 0; i < 3000; ++i) {
+        system("clear");    
+        creep->update();
+        for (int i = 0; i < 30; ++i) {
+            for (int j = 0; j < 30; ++j) {
+                if (gm->getDirectionAt(j * GRID_SIZE, i * GRID_SIZE) 
+                    == D_NONE) {
+                    printf("X ");
+                } else if (i == (int)creep->getY() / GRID_SIZE and 
+                           j == (int)creep->getX() / GRID_SIZE)  {
+                    printf("o ");
+                } else {
+                    printf("  ");
+                }
+            }
+            puts("");
+        }
+        printf("%d %d\n", (int)creep->getX(), (int)creep->getY());
+        usleep(6000);
+    }
+
     delete gm;
-	delete graEngine;
 }
 
 #endif
@@ -134,8 +153,9 @@ void test() {
 int main(int argc, char *argv[]) {
 
 #ifdef DEBUG
-    test();
+    move_test();
 #endif
 
     return EXIT_SUCCESS;
 }
+

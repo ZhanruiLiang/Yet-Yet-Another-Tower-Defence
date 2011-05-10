@@ -7,18 +7,24 @@
 using std::vector;
 
 //usage:
-// step 1. init using the method 'initFrom', e.g. Clipper::initFrom("resource/cp1") see cp1 for details
+// step 1. init using the method 'initFrom', e.g. MyClipper.initFrom("resource/cp1") see the file "resource/cp1" for details
 // step 2. now the class is ready, just use as usual
 // step 3. when the class is no longer needed, use static method Clipper::clean() to clean
 //
-// You may want to derive this class to make more then one type of sprites. To do this:
-// class TowerClipper: public Clipper{
-//		private:
-//          ...
-//		public:
-//			...
-// };
-// you don't need to overload any methods
+/* An Example
+
+Clipper MyC1;
+Clipper MyC2("resource/cp1");
+
+MyC1.initFrom("resource/cp2");
+
+MyC1.setX(200);
+...
+
+Clipper::clean();
+return;
+
+*/
 class Clipper
 {
 	public:

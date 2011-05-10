@@ -7,15 +7,39 @@
 using std::list;
 
 // Name convention in this class : cp means clipper
+/*
+
+usage:
+
+GraphicEngine gEngine;
+gEngine.init();
+
+Clipper cp1;
+DeriveClipper cp2;
+// init the clippers
+...
+//
+
+gEngine.addClipper(&cp1);
+gEngine.addClipper(&cp2);
+
+
+   */
 class GraphicEngine
 {
-	private:
-		struct Node;
 	public:
 		GraphicEngine();
 		~GraphicEngine();
 
 		void init();
+
+		struct Node
+		{
+			Clipper * cp;
+			Node(){}
+			Node(Clipper * cp0):cp(cp0){}
+		};
+
 
 		typedef list<Node>::iterator iterator;
 		typedef Uint32 Time_t;
@@ -34,13 +58,6 @@ class GraphicEngine
 		iterator begin();
 		iterator end();
 	private:
-		struct Node
-		{
-			Clipper * cp;
-			Node(){}
-			Node(Clipper * cp0):cp(cp0){}
-		};
-
 		double _FPS;
 		list<Node> _cps;
 

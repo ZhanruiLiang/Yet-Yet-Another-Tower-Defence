@@ -1,6 +1,8 @@
 #ifndef CREEP_H
 #define CREEP_H
 
+#include "direction.h"
+
 // Forward declarations
 class GridMap;
 
@@ -55,6 +57,11 @@ class Creep {
 
         double _x;
         double _y;
+
+        double _next_x;
+        double _next_y;
+
+        Direction _direction;
 
         double _speed;
 

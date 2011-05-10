@@ -11,16 +11,15 @@ namespace tower {
         RAPID  = 1,
         LASER  = 2,
     };
-    
+
     // 2D array to hold the damages of each tower at each level
-    // TODO: tower classes should not be associated with damage
-    // move them to bullets
     const int DAMAGE[TOWER_TYPES][TOWER_LEVELS] = {
         {10, 20, 50, 150, 400},       // NORMAL
         {5, 10, 25, 50, 200},         // RAPID
         {100, 200, 300, 500, 1000},   // LASER
     };
 
+   
     const double RANGE[TOWER_TYPES][TOWER_LEVELS] = {
         {100.0, 120.0, 140.0, 160.0, 180.0},       // NORMAL
         {150.0, 170.0, 190.0, 210.0, 230.0},       // RAPID

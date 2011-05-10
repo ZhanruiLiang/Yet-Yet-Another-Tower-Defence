@@ -36,23 +36,27 @@ class Tower {
         // Set the attack range of this tower
         void setRange(double range);
 
-        // Set the attack damage of this tower
+        // Set the damage of this tower
         void setDamage(int damage);
 
         // Set the cooldown (attack interval) of the tower
         void setCooldown(int cooldown);
+
+        // Upgrade the tower
+        void upgrade();
 
         TowerType getType() const;
 
         // Get the attack range 
         double getRange() const;
 
-        // Get the attack damage
         int getDamage() const;
 
         // Get the x and y coordinates of this tower on the grid map
         int getX() const;
         int getY() const;
+
+        int getLevel() const;
 
     protected:
 
@@ -60,13 +64,15 @@ class Tower {
 
         double _range;       // attack range
 
-        int _damage;      // attack damage
-
         int _cooldown;       // cooldown (attack interval)
         int _cooldown_count; // cooldown count
                              // the attack method will actually
                              // fire a bullet only when this count
                              // drops to zero
+                             //
+        int _level;
+
+        int _damage;
 
         TowerType _type;
 };

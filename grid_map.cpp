@@ -330,6 +330,8 @@ void GridMap::_updateRouteHelper(Grid **grids) {
     for (int i = 0; i < _height; ++i) {
         for (int j = 0; j < _width; ++j) {
             Grid *g = grids[i] + j;
+            g->next_x = j * _grid_size + _grid_size / 2;
+            g->next_y = i * _grid_size + _grid_size / 2;
             if (g->direction & D_LEFT) {
                 g->next_x = (j - 1) * _grid_size + _grid_size / 2; 
             }

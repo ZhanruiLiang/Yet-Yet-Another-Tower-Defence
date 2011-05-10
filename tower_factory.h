@@ -5,7 +5,7 @@
 
 class Tower;
 
-// Factory Class for creating creeps
+// Factory Class for creating towers
 class TowerFactory {
     
     public:

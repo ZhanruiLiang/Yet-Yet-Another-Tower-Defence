@@ -1,10 +1,23 @@
-objects_gra = sbox.o pen.o clipper.o parser.o graphic_engine.o
+objects_gra = sbox.o \
+			  pen.o \
+			  clipper.o \
+			  parser.o \
+			  graphic_engine.o
 
-objects_game = main.o grid_map.o creep.o creep_factory.o tower.o tower_factory.o game_engine.o
+objects_game = main.o \
+			   grid_map.o \
+			   creep.o \
+			   creep_factory.o \
+			   tower.o \
+			   tower_factory.o \
+			   game_engine.o \
+			   bullet.o \
+			   bullet_factory.o
 
 flags = -g -Wall -lSDL -lSDL_image -lSDL_ttf -lSDL_gfx -DDEBUG
 compiler = g++
 
+#-------------------------------------------------------------------
 yyatd : $(objects_game) $(objects_gra) 
 	$(compiler) $(flags) $(objects_game) $(objects_gra) -o yyatd
 
@@ -42,6 +55,13 @@ tower.o : tower.h tower.cpp creep.h
 tower_factory.o : tower_factory.h tower_factory.cpp tower_config.h
 	$(compiler) $(flags) -c tower_factory.cpp
 
+bullet.o : bullet.h bullet.cpp
+	$(compiler) $(flags) -c bullet.cpp
+
+bullet_factory.o : bullet_factory.h bullet_factory.cpp bullet_config.h \
+				   tower.h
+	$(compiler) $(flags) -c bullet_factory.cpp
+
 game_engine.o : grid_map.h tower.h tower_config.h tower_factory.h \
 			    creep.h creep_config.h creep_factory.h
 	$(compiler) $(flags) -c game_engine.cpp
@@ -50,8 +70,4 @@ game_engine.o : grid_map.h tower.h tower_config.h tower_factory.h \
 
 clean:
 	-rm $(objects_gra) $(objects_game) graTest yyatd
-
-
-
-
 

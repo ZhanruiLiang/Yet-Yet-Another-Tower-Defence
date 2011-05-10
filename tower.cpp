@@ -3,8 +3,10 @@
 
 #include <cmath>    // For: hypot
 #include <ciso646>  // For: and or not
+#include <cassert>
 
-Tower::Tower() {
+Tower::Tower()
+    :_level(0) {
 }
 
 Tower::~Tower() {
@@ -47,6 +49,13 @@ void Tower::setCooldown(int cooldown) {
     _cooldown = cooldown;
 }
 
+void Tower::upgrade() {
+#ifdef DEBUG
+    assert(_level < 4);
+#endif
+    ++_level;
+}
+
 Tower::TowerType Tower::getType() const {
     return _type;
 }
@@ -67,3 +76,6 @@ int Tower::getY() const {
     return _y;
 }
 
+int Tower::getLevel() const {
+    return _level;
+}

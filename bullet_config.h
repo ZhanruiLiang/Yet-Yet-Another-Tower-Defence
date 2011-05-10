@@ -13,11 +13,6 @@ namespace bullet {
         LASER  = 2
     };
 
-    const int HEALTH[BULLET_TYPES] = {
-        5,         // NORMAL
-        10,        // STRONG
-        7          // FAST
-    };
 
     const double SPEED[BULLET_TYPES] = {
         1.0,       // NORMAL
