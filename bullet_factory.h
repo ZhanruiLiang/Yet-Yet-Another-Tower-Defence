@@ -15,7 +15,7 @@ class BulletFactory {
         BulletFactory();
         ~BulletFactory();
 
-        Bullet *getBullet(bullet::BulletType type, Tower *tower, Creep *creep);
+        Bullet *getBullet(Tower *tower, Creep *creep);
 };
 
 #endif

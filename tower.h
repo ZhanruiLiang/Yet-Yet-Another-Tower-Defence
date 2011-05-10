@@ -42,6 +42,7 @@ class Tower {
         // Set the cooldown (attack interval) of the tower
         void setCooldown(int cooldown);
 
+        // Upgrade the tower
         void upgrade();
 
         TowerType getType() const;
@@ -54,6 +55,8 @@ class Tower {
         // Get the x and y coordinates of this tower on the grid map
         int getX() const;
         int getY() const;
+
+        int getLevel() const;
 
     protected:
 

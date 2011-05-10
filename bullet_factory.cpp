@@ -13,10 +13,9 @@ BulletFactory::BulletFactory() {
 BulletFactory::~BulletFactory() {
 }
 
-Bullet *BulletFactory::getBullet(bullet::BulletType type,
-                                 Tower *tower,
-                                 Creep *creep) {
+Bullet *BulletFactory::getBullet(Tower *tower, Creep *creep) {
     Bullet *new_bullet = new Bullet();
+    int type = tower->getType();
     new_bullet->setType(type);
     new_bullet->setTower(tower);
     new_bullet->setCreep(creep);

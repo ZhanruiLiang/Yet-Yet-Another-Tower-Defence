@@ -32,8 +32,10 @@ bullet_factory.o : bullet_factory.h bullet_factory.cpp bullet_config.h \
 				   tower.h
 	$(compiler) $(flags) -c bullet_factory.cpp
 
-game_engine.o : grid_map.h tower.h tower_config.h tower_factory.h \
-			    creep.h creep_config.h creep_factory.h
+game_engine.o : game_engine.h game_engine.cpp grid_map.h tower.h \
+				tower_config.h tower_factory.h \
+			    creep.h creep_config.h creep_factory.h bullet.h \
+				bullet_config.h bullet_factory.h
 	$(compiler) $(flags) -c game_engine.cpp
 
 

@@ -76,3 +76,6 @@ int Tower::getY() const {
     return _y;
 }
 
+int Tower::getLevel() const {
+    return _level;
+}
