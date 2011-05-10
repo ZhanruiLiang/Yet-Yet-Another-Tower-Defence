@@ -20,7 +20,32 @@ void canBuildAt(GridMap *gm, int x, int y) {
            gm->canBuildAt(x, y) ? "True" : "False");
 }   
 
-void test() {
+void next_test() {
+    enum {GRID_SIZE = 32};
+    
+    // build map
+    GridMap *gm = new GridMap(30, 30, GRID_SIZE);
+    gm->setTarget(5 * GRID_SIZE, 5 * GRID_SIZE);
+
+    for (int i = 0; i < 20; ++i) {
+        gm->setWalkableAt(10 * GRID_SIZE, i * GRID_SIZE, false);
+    }
+
+    for (int i = 10; i < 20; ++i) {
+        gm->setWalkableAt(i * GRID_SIZE, 10 * GRID_SIZE, false);
+    }
+
+    gm->updateRoute();
+
+    for (int i = 0; i < 30; ++i) {
+        for (int j = 0; j < 30; ++j) {
+            printf("%d,%d ", gm->getNextX(j * 32 + 16, i * 32 + 16), gm->getNextY(j * 32 + 16, i * 32 + 16));
+        }
+        puts("");
+    }
+}
+
+void build_test() {
 
     enum {GRID_SIZE = 32};
     
@@ -63,21 +88,49 @@ void test() {
     creep->setGridMap(gm);
 
     printf("%d, %d\n", gm->getNextX(193, 193), gm->getNextY(193, 193));
+}
 
-    ////////
-    return;
-    ////////
+
+void move_test() {
+   
+    enum {GRID_SIZE = 32};
     
+    // build map
+    GridMap *gm = new GridMap(30, 30, GRID_SIZE);
+    gm->setTarget(5 * GRID_SIZE, 5 * GRID_SIZE);
+
+    for (int i = 0; i < 20; ++i) {
+        gm->setWalkableAt(10 * GRID_SIZE, i * GRID_SIZE, false);
+    }
+
+    for (int i = 10; i < 20; ++i) {
+        gm->setWalkableAt(i * GRID_SIZE, 10 * GRID_SIZE, false);
+    }
+
+    gm->updateRoute();
+
+    gm->printRoute();
+   // return;
+
+
+    CreepFactory *factory = new CreepFactory();
+
+    Creep *creep = factory->getCreep(creep::NORMAL);
+
+    creep->setGridMap(gm);
+    creep->setX(500.0);
+    creep->setY(500.0);
+
     for (int i = 0; i < 3000; ++i) {
         system("clear");    
         creep->update();
         for (int i = 0; i < 30; ++i) {
             for (int j = 0; j < 30; ++j) {
-                if (gm->getDirectionAt(j * 20, i * 20) 
+                if (gm->getDirectionAt(j * GRID_SIZE, i * GRID_SIZE) 
                     == D_NONE) {
                     printf("X ");
-                } else if (i == (int)creep->getY() / 20 and 
-                           j == (int)creep->getX() / 20)  {
+                } else if (i == (int)creep->getY() / GRID_SIZE and 
+                           j == (int)creep->getX() / GRID_SIZE)  {
                     printf("o ");
                 } else {
                     printf("  ");
@@ -86,7 +139,7 @@ void test() {
             puts("");
         }
         printf("%d %d\n", (int)creep->getX(), (int)creep->getY());
-        usleep(30000);
+        usleep(6000);
     }
 
     delete gm;
@@ -100,7 +153,7 @@ void test() {
 int main(int argc, char *argv[]) {
 
 #ifdef DEBUG
-    test();
+    move_test();
 #endif
 
     return EXIT_SUCCESS;
