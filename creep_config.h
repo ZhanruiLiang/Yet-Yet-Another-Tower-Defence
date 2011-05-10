@@ -11,7 +11,7 @@ namespace creep {
         FAST   = 2
     };
 
-    const double UPGRADE_RATIO  = 1.2;
+    const double UPGRADE_RATIO = 1.2;
 
     const int HEALTH[CREEP_TYPES] = {
         5,         // NORMAL

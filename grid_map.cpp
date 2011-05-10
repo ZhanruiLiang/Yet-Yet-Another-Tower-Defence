@@ -1,4 +1,5 @@
 #include "grid_map.h"
+#include "direction.h"
 
 #include <cassert> // For: assert
 #include <ciso646> // For: and or not
@@ -35,7 +36,7 @@ struct GreedyNode {
 
 
 GridMap::Grid::Grid() 
-    :direction(GridMap::NONE),
+    :direction(D_NONE),
      is_walkable(true),
      visited(false),
      has_creeps(false) {
@@ -156,7 +157,7 @@ bool GridMap::canBuildAt(int x, int y) {
     int source_y = toGridY(_source_y);
 
     // Check whether the routes from source to target is blocked
-    if (_test_grids[source_y][source_x].direction == NONE) {
+    if (_test_grids[source_y][source_x].direction == D_NONE) {
 #ifdef DEBUG
         printf("Cannot build at (%d, %d), (Route Blocked)\n",
                x, y);
@@ -168,7 +169,7 @@ bool GridMap::canBuildAt(int x, int y) {
     for (int i = 0; i < _height; ++i) {
         for (int j = 0; j < _width; ++j) {
             if (_test_grids[i][j].has_creeps and 
-                _test_grids[i][j].direction == NONE) {
+                _test_grids[i][j].direction == D_NONE) {
                 return false;
 #ifdef DEBUG
         printf("Cannot build at (%d, %d), (Creeps Blocked)\n",
@@ -240,12 +241,12 @@ void GridMap::_updateRouteHelper(Grid **grids) {
 
     // horizontal and vertical directions
     static const Direction dirs[] = {
-        RIGHT, UP, LEFT, DOWN
+        D_RIGHT, D_UP, D_LEFT, D_DOWN
     };
 
     // diagonal directions
     static const Direction ddirs[] = {
-        BOTTOMRIGHT, TOPRIGHT, TOPLEFT, BOTTOMLEFT
+        D_BOTTOMRIGHT, D_TOPRIGHT, D_TOPLEFT, D_BOTTOMLEFT
     };
 
 
@@ -324,6 +325,25 @@ void GridMap::_updateRouteHelper(Grid **grids) {
             } 
         }
     }
+
+    // Update each grid's next x an y
+    for (int i = 0; i < _height; ++i) {
+        for (int j = 0; j < _width; ++j) {
+            Grid *g = grids[i] + j;
+            if (g->direction & D_LEFT) {
+                g->next_x = (j - 1) * _grid_size + _grid_size / 2; 
+            }
+            if (g->direction & D_RIGHT) {
+                g->next_x = (j + 1) * _grid_size + _grid_size / 2; 
+            }
+            if (g->direction & D_UP) {
+                g->next_y = (i - 1) * _grid_size + _grid_size / 2; 
+            }
+            if (g->direction & D_DOWN) {
+                g->next_y = (i + 1) * _grid_size + _grid_size / 2; 
+            }
+        }
+    } 
 }
 
 
@@ -339,7 +359,7 @@ int GridMap::getHeight() const {
 
 // Get the direction the creeps should head for
 // at the given coordinate
-GridMap::Direction GridMap::getDirectionAt(int x, int y) const {
+Direction GridMap::getDirectionAt(int x, int y) const {
     x = toGridX(x);
     y = toGridY(y);
     return _grids[y][x].direction;
@@ -367,7 +387,7 @@ void GridMap::_clearGridsFlags(Grid **grids) {
     for (int i = 0; i < _height; ++i) {
         for (int j = 0; j < _width; ++j) {
             grids[i][j].visited = false;
-            grids[i][j].direction = NONE;
+            grids[i][j].direction = D_NONE;
         }
     }
 }
@@ -382,6 +402,19 @@ bool GridMap::_isValidCoord(int x, int y) const {
 }
 
 
+int GridMap::getNextX(int x, int y) const {
+    x = toGridX(x);
+    y = toGridY(y);
+    return _grids[y][x].next_x;
+}
+
+
+int GridMap::getNextY(int x, int y) const {
+    x = toGridX(x);
+    y = toGridY(y);
+    return _grids[y][x].next_y;
+}
+
 #ifdef DEBUG
 
 void GridMap::printRoute() const {
@@ -394,18 +427,18 @@ void GridMap::printRoute() const {
         printf("%2d ", i);
         for (int j = 0; j < _width; ++j) {
             switch (_grids[i][j].direction) {
-                case NONE:
+                case D_NONE:
                     putchar(' '); break;
-                case LEFT:
+                case D_LEFT:
                     putchar('<'); break;
-                case RIGHT:
+                case D_RIGHT:
                     putchar('>'); break;
-                case UP:
+                case D_UP:
                     putchar('^'); break;
-                case DOWN:
+                case D_DOWN:
                     putchar('v'); break;
-                case TOPLEFT:
-                case BOTTOMRIGHT:
+                case D_TOPLEFT:
+                case D_BOTTOMRIGHT:
                     putchar('\\'); break;
                 default:
                     putchar('/'); break;

@@ -1,6 +1,8 @@
 #ifndef GRID_MAP_H
 #define GRID_MAP_H
 
+#include "direction.h"
+
 // GridMap class
 // Holds a two-dimensional array of grids and calculates
 // the routes of the creeps.
@@ -26,19 +28,6 @@
 class GridMap {
     
     public:
-
-        // enum the directions
-        enum Direction {
-            NONE        = 0x0,  // 0000
-            LEFT        = 0x1,  // 0001
-            RIGHT       = 0x2,  // 0010
-            UP          = 0x4,  // 0100
-            DOWN        = 0x8,  // 1000 
-            TOPLEFT     = 0x5,  // 0101
-            TOPRIGHT    = 0x6,  // 0110
-            BOTTOMLEFT  = 0x9,  // 1001
-            BOTTOMRIGHT = 0xA   // 1010
-        };
 
         // GridMap constructor, takes two params namely the 
         // width and height of the map
@@ -100,6 +89,10 @@ class GridMap {
         int toGridCenterX(int x) const;
         int toGridCenterY(int y) const;
 
+        // Get the next coordinate the creep should head for
+        int getNextX(int x, int y) const;
+        int getNextY(int x, int y) const;
+
 
 #ifdef DEBUG
         void printRoute() const;
@@ -117,6 +110,8 @@ class GridMap {
             bool is_walkable;    //
             bool visited;        // 
             bool has_creeps;     // 
+            int next_x;
+            int next_y;
         };
 
 
