@@ -1,0 +1,10 @@
+\section{frame}
+{
+	\section{xx.png}
+	{
+		width=20
+		height=20
+		count=3
+		label=
+	}
+}
