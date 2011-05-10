@@ -20,7 +20,7 @@ GameEngine::~GameEngine() {
     _grid_map = NULL;
 }
 
-void GameEngine::loop() {
+void GameEngine::run() {
     for (;;) {
         // main loop here  
         _handleEvents();
@@ -48,7 +48,7 @@ void GameEngine::_updateCreeps() {
 
 void GameEngine::_updateTowers() {
 
-        // For each tower check to see, whether it can hit any creep
+        // For each tower check to see whether it can hit any creep
         for (std::list<Tower *>::iterator itower = _towers.begin();
              itower != _towers.end(); 
              ++itower) {

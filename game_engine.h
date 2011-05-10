@@ -14,7 +14,7 @@ class GameEngine {
         GameEngine();
         ~GameEngine();
 
-        void loop();
+        void run();
 
     private:
         
