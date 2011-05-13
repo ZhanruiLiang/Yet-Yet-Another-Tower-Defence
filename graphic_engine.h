@@ -3,8 +3,9 @@
 #include "preinclude.h"
 #include "clipper.h"
 #include "sbox.h"
-#include <list>
-using std::list;
+#include <vector>
+using std::vector;
+
 
 // Name convention in this class : cp means clipper
 /*
@@ -38,10 +39,14 @@ class GraphicEngine
 			Clipper * cp;
 			Node(){}
 			Node(Clipper * cp0):cp(cp0){}
+			bool operator<(const Node & rhs)const
+			{
+				return cp->getDepth() < rhs.cp->getDepth();
+			}
 		};
 
 
-		typedef list<Node>::iterator iterator;
+		typedef vector<Node>::iterator iterator;
 		typedef Uint32 Time_t;
 
 		//clipper operating
@@ -59,7 +64,7 @@ class GraphicEngine
 		iterator end();
 	private:
 		double _FPS;
-		list<Node> _cps;
+		vector<Node> _cps;
 
 		Time_t _start_time;
 		Time_t _current_time;
@@ -67,7 +72,6 @@ class GraphicEngine
 		Time_t _next_time;
 
 		//methods
-		bool _clipperCompareLess(GraphicEngine::iterator,GraphicEngine::iterator);
 		void _sortClipper();
 };
 

@@ -1,9 +1,10 @@
 #include "graphic_engine.h"
+#include "preinclude.h"
 #include <algorithm>
 
-GraphicEngine::GraphicEngine():
-	_FPS(30)
+GraphicEngine::GraphicEngine()
 {
+	_FPS = 24;
 }
 
 GraphicEngine::~GraphicEngine()
@@ -12,7 +13,6 @@ GraphicEngine::~GraphicEngine()
 	{
 		//XXX
 	}
-	sbox::cleanSDL();
 }
 
 GraphicEngine::iterator GraphicEngine::addClipper(Clipper *ptr_cp)
@@ -50,18 +50,16 @@ GraphicEngine::iterator GraphicEngine::end()
 
 void GraphicEngine::init()
 {
-	sbox::initSDL();
-	sbox::MAX_FPS = _FPS;
-	_start_time = SDL_GetTicks();
+	_next_time = _start_time = SDL_GetTicks();
+	std::cout << "start: " << _start_time << '\n';
 }
 
-bool GraphicEngine::_clipperCompareLess(GraphicEngine::iterator a, GraphicEngine::iterator b)
-{
-	return a->cp->getDepth() < b->cp->getDepth();
-}
 
 void GraphicEngine::_sortClipper()
 {
+	std::sort(_cps.begin(), _cps.end());
+	/*
+	   //slow implementation
 	Node temp;
 	iterator begin,end,it,it1;
 	begin = _cps.begin();
@@ -85,6 +83,7 @@ void GraphicEngine::_sortClipper()
 			it1++;
 		}
 	}
+	*/
 }
 
 void GraphicEngine::loop()
@@ -100,7 +99,7 @@ void GraphicEngine::loop()
 
 	_sortClipper();
 	//refresh
-	SDL_FillRect(sbox::screen, &sbox::getRect(0,0,sbox::SCREEN_WIDTH,sbox::SCREEN_HEIGHT), sbox::getColorByName("white"));
+	SDL_FillRect(sbox::screen, &sbox::screen->clip_rect, sbox::getColorByName("white"));
 	//blit all
 	for(iterator it = _cps.begin(); it != _cps.end(); it++)
 	{

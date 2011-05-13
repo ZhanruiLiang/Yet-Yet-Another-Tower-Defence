@@ -4,7 +4,7 @@ objects_gra = sbox.o \
 			  parser.o \
 			  graphic_engine.o
 
-objects_game = main.o \
+objects_game = main3.o \
 			   grid_map.o \
 			   creep.o \
 			   creep_factory.o \
@@ -21,9 +21,12 @@ compiler = g++
 yyatd : $(objects_game) $(objects_gra) 
 	$(compiler) $(flags) $(objects_game) $(objects_gra) -o yyatd
 
-main.o : main.cpp grid_map.h creep.h\
+main3.o : main3.cpp grid_map.h creep.h\
+	creep_config.h creep_factory.h\
+	tower.h tower_config.h tower_factory.h\
+	direction.h\
 	graphic_engine.h clipper.h sbox.h preinclude.h
-	$(compiler) $(flags) -c main.cpp
+	$(compiler) $(flags) -c main3.cpp
 
 graphic_engine.o: graphic_engine.cpp graphic_engine.h sbox.h clipper.h preinclude.h
 	$(compiler) $(flags) -c graphic_engine.cpp
@@ -62,12 +65,13 @@ bullet_factory.o : bullet_factory.h bullet_factory.cpp bullet_config.h \
 				   tower.h
 	$(compiler) $(flags) -c bullet_factory.cpp
 
-game_engine.o : grid_map.h tower.h tower_config.h tower_factory.h \
+game_engine.o : game_engine.h game_engine.cpp\
+	grid_map.h tower.h tower_config.h tower_factory.h \
 			    creep.h creep_config.h creep_factory.h
 	$(compiler) $(flags) -c game_engine.cpp
 
 .PHONY: clean
 
 clean:
-	-rm $(objects_gra) $(objects_game) graTest yyatd
+	-rm $(objects_gra) $(objects_game) yyatd
 

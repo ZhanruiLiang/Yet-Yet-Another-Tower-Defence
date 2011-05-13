@@ -1,6 +1,15 @@
 #include "pen.h"
 #include "sbox.h"
 
+
+Pen::Pen():_surface(NULL),
+	_color(Uint32(0x000000ff)),
+	_width(1),
+	_cur_x(0),
+	_cur_y(0)
+{
+
+}
 Pen::Pen(SDL_Surface * surface):_surface(surface),
 	_color(Uint32(0x000000ff)),
 	_width(1),

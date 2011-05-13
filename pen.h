@@ -2,9 +2,16 @@
 #define PEN_H
 #include "preinclude.h"
 
+// Usage: 
+//		1. construct a pen
+//		2. set the pen using 
+//			a. setColor.   b. setWidth   c. setSurface
+//		3. use it using:
+//			a. moveTo.     b. lineTo
 class Pen
 {
 	public:
+		Pen();
 		Pen(SDL_Surface * surface);
 
 		virtual void moveTo(int x, int y);
