@@ -1,0 +1,10 @@
+\section{frame}
+{
+	\section{bullet.png}
+	{
+		width=5
+		height=5
+		count=2
+		label=
+	}
+}

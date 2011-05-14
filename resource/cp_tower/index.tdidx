@@ -1,0 +1,10 @@
+\section{frame}
+{
+	\section{tower.png}
+	{
+		width=32
+		height=32
+		count=3
+		label=
+	}
+}
