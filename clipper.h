@@ -30,7 +30,7 @@ class Clipper
 	public:
 		Clipper();
 		Clipper(const string & filename);
-		~Clipper();
+		virtual ~Clipper();
 		
 		//set,get x, y
 		void setX(int x);
@@ -43,6 +43,8 @@ class Clipper
 		int getWidth();
 		void setHeight(double height);
 		int getHeight();
+
+		SDL_Rect  getRect();
 
 		//depth
 		void setDepth(int depth);
@@ -57,9 +59,9 @@ class Clipper
 
 		//some methods use to control the frame playing, if success, return true
 		bool gotoAndPlay(int num);
-		//bool gotoAndPlay(const string & label);
+		bool gotoAndPlay(const string & label);
 		bool gotoAndStop(int num);
-		//bool gotoAndStop(const string & lable);
+		bool gotoAndStop(const string & lable);
 
 		int currentFrame();
 		int totalFrame();
@@ -68,7 +70,9 @@ class Clipper
 
 		void stop();
 
-		void loop();
+		bool isPlaying();
+
+		virtual void loop();
 
 		//init the frames, from a floder "$filename"
 		bool initFrom(const string & filename);
@@ -97,6 +101,8 @@ class Clipper
 		int _frame;
 		bool _stop;
 
+		vector< Frame >  _frames;
+
 	private:
 		//the FrameRecord, is used to record loaded pictures.
 		// if a record exist, then fetch it form a FrameRecord.
@@ -123,9 +129,8 @@ class Clipper
 					(rect.h == fmRec.rect.h);
 			}
 		};
-		static vector<FrameRecord> _fm_records;
 
-		vector< Frame >  _frames;
+		static vector<FrameRecord> _fm_records;
 
 		// methods
 		bool _changeFrame(int num);

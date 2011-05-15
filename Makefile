@@ -3,6 +3,9 @@ objects_gra = sbox.o \
 			  clipper.o \
 			  parser.o \
 			  graphic_engine.o
+objects_ui = uicom.o\
+			 ui_engine.o\
+			 state.o
 
 objects_game = main3.o \
 			   grid_map.o \
@@ -14,19 +17,29 @@ objects_game = main3.o \
 			   bullet.o \
 			   bullet_factory.o
 
-flags = -g -Wall -lSDL -lSDL_image -lSDL_ttf -lSDL_gfx -DDEBUG
+flags = -g -DDEBUG -Wall -lSDL -lSDL_image -lSDL_ttf -lSDL_gfx -std=c++0x
 compiler = g++
 
 #-------------------------------------------------------------------
-yyatd : $(objects_game) $(objects_gra) 
-	$(compiler) $(flags) $(objects_game) $(objects_gra) -o yyatd
+yyatd : $(objects_game) $(objects_gra) $(objects_ui) 
+	$(compiler) $(flags) $(objects_game) $(objects_gra) $(objects_ui) -o yyatd
 
 main3.o : main3.cpp grid_map.h creep.h\
 	creep_config.h creep_factory.h\
 	tower.h tower_config.h tower_factory.h\
 	direction.h\
-	graphic_engine.h clipper.h sbox.h preinclude.h
+	graphic_engine.h clipper.h sbox.h preinclude.h\
+	uicom.h ui_engine.h
 	$(compiler) $(flags) -c main3.cpp
+
+uicom.o : uicom.cpp uicom.h clipper.h preinclude.h
+	$(compiler) $(flags) -c uicom.cpp
+
+state.o : state.cpp state.h preinclude.h
+	$(compiler) $(flags) -c state.cpp
+
+ui_engine.o : ui_engine.cpp graphic_engine.h ui_engine.h clipper.h state.h
+	$(compiler) $(flags) -c ui_engine.cpp
 
 graphic_engine.o: graphic_engine.cpp graphic_engine.h sbox.h clipper.h preinclude.h
 	$(compiler) $(flags) -c graphic_engine.cpp
@@ -73,5 +86,5 @@ game_engine.o : game_engine.h game_engine.cpp\
 .PHONY: clean
 
 clean:
-	-rm $(objects_gra) $(objects_game) yyatd
+	-rm $(objects_gra) $(objects_game) $(objects_ui) yyatd
 

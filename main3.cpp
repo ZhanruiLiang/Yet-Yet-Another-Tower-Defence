@@ -14,6 +14,8 @@
 #include "preinclude.h"
 #include "clipper.h"
 #include "graphic_engine.h"
+#include "uicom.h"
+#include "ui_engine.h"
 
 #ifdef DEBUG
 
@@ -188,7 +190,7 @@ void move_test() {
 						));
 			ge->addClipper(&cp);
 		}
-	cp_creep.initFrom("resource/cp3");
+	cp_creep.initFrom("resource/cp_bullet");
 	cp_creep.setX(creep->getX());
 	cp_creep.setY(creep->getY());
 	cp_creep.setDepth(1);
@@ -223,12 +225,75 @@ void move_test() {
 #endif
 
 
+void event_test()
+{
+	sbox::initSDL();
+
+	SDL_Event event;
+	bool quit = false;
+	while(!quit)
+	{
+		while(SDL_PollEvent(&event))
+		{
+			if(event.type == SDL_QUIT)
+				quit = true;
+			if(event.type == SDL_MOUSEMOTION)
+			{
+				cout << "(x,y,state)" << event.motion.xrel << ' '
+					<< event.motion.yrel << ' ' << (int)event.motion.state << '\n';
+			}
+		}
+	}
+
+	sbox::cleanSDL();
+}
+
+void ui_test()
+{
+	sbox::initSDL();
+	GraphicEngine * graEngine = new GraphicEngine;
+	UIEngine * uiEngine = new UIEngine;
+
+	graEngine->init();
+
+	//setup button1
+	UIButton button1("resource/cp_button1");
+	button1.setX(100);
+	button1.setY(50);
+	button1.setDepth(100);
+	graEngine->addClipper(&button1);
+	uiEngine->addUICom(&button1);
+
+	SDL_Event event;
+	vector<SDL_Event> events;
+	bool quit = false;
+	while(!quit)
+	{
+		events.clear();
+		while(SDL_PollEvent(&event))
+		{
+			if(event.type == SDL_QUIT)
+				quit = true;
+			events.push_back(event);
+		}
+		uiEngine->loop(events);
+		graEngine->loop();
+		sbox::delay();
+	}
+
+	Clipper::clean();
+	delete graEngine;
+	delete uiEngine;
+	sbox::cleanSDL();
+}
 
 
 int main(int argc, char *argv[]) {
 
 #ifdef DEBUG
-	move_test();
+//	move_test();
+//	event_test();
+	ui_test();
 #endif
 
 	return EXIT_SUCCESS;

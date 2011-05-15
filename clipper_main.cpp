@@ -9,7 +9,7 @@ int main()
 	Clipper ccc;
 	ResManager rm;
 
-	ccc.setResManager(&rm);
+	ccc::setResManager(&rm);
 	Clipper::initFrom("resource/cp1");
 	ccc.setX(100);
 	ccc.setY(100);

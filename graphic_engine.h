@@ -62,7 +62,38 @@ class GraphicEngine
 		//this class is iteratable
 		iterator begin();
 		iterator end();
+#ifdef DEBUG
+		void addMark(int x, int y, string type = "normal")
+		{
+			static int cnt = 0;
+			cout << "cnt = " << cnt++ << '\n';
+			if(type == "keep")
+			{
+				//marks.push_back(Mark(x,y,true));
+			}
+			else
+			{
+				cout << "(" << x << "," << y << '\n';
+				cout << "size of makrs: " << (int)marks.size() << '\n';
+				//marks.push_back(Mark(x,y));
+			}
+		}
+
+#endif
 	private:
+#ifdef DEBUG
+		struct Mark
+		{
+			int x, y;
+			bool keep;
+			Mark(){}
+			Mark(int x, int y, bool keep = false):x(x),y(y),keep(keep){}
+		};
+
+		vector<Mark> marks;
+		SDL_Surface * _surface_mark;
+#endif
+
 		double _FPS;
 		vector<Node> _cps;
 

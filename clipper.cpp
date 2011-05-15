@@ -222,6 +222,10 @@ int Clipper::getHeight()
 	return _rect.h;
 }
 
+SDL_Rect  Clipper::getRect()
+{
+	return _rect;
+}
 void Clipper::setDepth(int depth)
 {
 	_depth = depth;
@@ -292,6 +296,36 @@ bool Clipper::gotoAndStop(int num)
 	return true;
 }
 
+bool Clipper::gotoAndPlay(const string & label)
+{
+	int cnt = 0;
+	for(vector<Frame>::iterator it = _frames.begin();
+			it != _frames.end(); it++, cnt++)
+	{
+		if(it->label == label)
+		{
+			gotoAndPlay(cnt); 
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Clipper::gotoAndStop(const string & label)
+{
+	int cnt = 0;
+	for(vector<Frame>::iterator it = _frames.begin();
+			it != _frames.end(); it++, cnt++)
+	{
+		if(it->label == label)
+		{
+			gotoAndStop(cnt); 
+			return true;
+		}
+	}
+	return false;
+}
+
 int Clipper::currentFrame()
 {
 	return _frame;
@@ -310,6 +344,11 @@ void Clipper::play()
 void Clipper::stop()
 {
 	_stop = true;
+}
+
+bool Clipper::isPlaying()
+{
+	return !_stop;
 }
 
 void Clipper::loop()

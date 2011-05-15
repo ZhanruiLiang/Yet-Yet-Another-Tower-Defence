@@ -18,7 +18,7 @@ GraphicEngine::~GraphicEngine()
 GraphicEngine::iterator GraphicEngine::addClipper(Clipper *ptr_cp)
 {
 	_cps.push_back(Node(ptr_cp));
-	return _cps.end();
+	return _cps.end() - 1;
 }
 
 bool GraphicEngine::deleteClipper(GraphicEngine::iterator it_cp)
@@ -51,13 +51,17 @@ GraphicEngine::iterator GraphicEngine::end()
 void GraphicEngine::init()
 {
 	_next_time = _start_time = SDL_GetTicks();
-	std::cout << "start: " << _start_time << '\n';
+#ifdef DEBUG
+	marks.clear();
+	cout << "first size: " << marks.size() << '\n';
+	_surface_mark = sbox::loadImage("resource/debug/mark.png");
+#endif
 }
 
 
 void GraphicEngine::_sortClipper()
 {
-	std::sort(_cps.begin(), _cps.end());
+	//std::sort(_cps.begin(), _cps.end());
 	/*
 	   //slow implementation
 	Node temp;
@@ -99,17 +103,37 @@ void GraphicEngine::loop()
 
 	_sortClipper();
 	//refresh
-	SDL_FillRect(sbox::screen, &sbox::screen->clip_rect, sbox::getColorByName("white"));
+	SDL_FillRect(sbox::screen, 
+			&sbox::screen->clip_rect, 
+			sbox::getColorByName("white"));
 	//blit all
 	for(iterator it = _cps.begin(); it != _cps.end(); it++)
 	{
 		Clipper * cp = it->cp;
 		//blit
+		SDL_Rect rect = sbox::getRect(cp->getX(), cp->getY()); 
 		SDL_BlitSurface(cp->getSurface(),
 				NULL,
 				sbox::screen,
-				&sbox::getRect(cp->getX(), cp->getY()));
+				&rect);
 	}
+	//debug blit
+#ifdef DEBUG
+	for(vector<Mark>::iterator it = marks.begin();
+			it != marks.end(); it++)
+	{
+		SDL_Rect rect = sbox::getRect(it->x, it->y);
+		SDL_BlitSurface(_surface_mark, NULL, sbox::screen, &rect);
+	}
+	vector<Mark>::iterator it1,it2;
+	for(it1 = marks.begin(); it1 != marks.end(); it1 = it2)
+	{
+		it2 = it1 + 1;
+		if(it1->keep == false)
+			marks.erase(it1);
+	}
+#endif
+
 	SDL_Flip(sbox::screen);
 
 	//update 
